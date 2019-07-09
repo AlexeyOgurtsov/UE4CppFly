@@ -4,6 +4,7 @@
 * Interface that all pawns moving on the track must implement.
 */
 
+#include "UObject/Interface.h"
 #include "ITrackPawnMovement.generated.h"
 
 UINTERFACE()

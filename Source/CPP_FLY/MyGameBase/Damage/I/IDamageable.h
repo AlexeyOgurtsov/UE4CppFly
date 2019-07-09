@@ -1,5 +1,6 @@
 #pragma once
 
+#include "UObject/Interface.h"
 #include "../DamageableState.h"
 #include "IDamageable.generated.h"
 

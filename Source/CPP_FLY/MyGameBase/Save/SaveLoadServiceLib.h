@@ -7,6 +7,7 @@
 * but (!) without interfering with the UI;
 */
 
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "SaveLoadServiceLib.generated.h"
 
 UCLASS()

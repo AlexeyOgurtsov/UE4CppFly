@@ -8,9 +8,12 @@
 #include "Util/Component/IMyComponent.h"
 #include "UIControllerComponentConfigLib.h"
 #include "UIControllerComponentDebugConfigLib.h"
+
+#include "Blueprint/UserWidget.h"
+
 #include "UIControllerComponentBase.generated.h"
 
-class UUserWidget;
+
 class APlayerController;
 
 class UUIControllerComponentEnvBase;

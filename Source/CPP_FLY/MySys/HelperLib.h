@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "Util/Core/LogUtilLib.h"
 #include "HelperLib.generated.h"
 

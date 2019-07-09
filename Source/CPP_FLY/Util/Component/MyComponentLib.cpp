@@ -1,6 +1,10 @@
 #include "MyComponentLib.h"
 #include "IMyComponent.h"
-#include "MySys/HelperLib.h"
+
+#include "../Core/LogUtilLib.h"
+
+#include "GameFramework/Actor.h"
+#include "Components/ActorComponent.h"
 
 class MyComponentLoop
 {

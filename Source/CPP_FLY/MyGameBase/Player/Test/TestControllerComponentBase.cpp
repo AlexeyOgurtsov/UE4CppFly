@@ -1,5 +1,7 @@
 #include "TestControllerComponentBase.h"
+#include "MyGameBase/Player/PCBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine/World.h"
 
 UTestControllerComponentBase::UTestControllerComponentBase()
 {

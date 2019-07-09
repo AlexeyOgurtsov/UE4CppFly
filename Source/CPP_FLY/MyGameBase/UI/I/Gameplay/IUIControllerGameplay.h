@@ -4,6 +4,7 @@
 * Methods for sending gameplay commands for the gameplay objects.
 */
 
+#include "UObject/Interface.h"
 #include "IUIControllerGameplay.generated.h"
 
 class UUIControllerGameplayEvents;

@@ -2,6 +2,8 @@
 #include "MySys/HelperLib.h"
 #include "Kismet/GameplayStatics.h"
 
+#include "Engine/World.h"
+
 UActorTestComponentBase::UActorTestComponentBase()
 {
 }

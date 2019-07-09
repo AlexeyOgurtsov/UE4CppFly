@@ -5,6 +5,7 @@
 * Typically to be included in the gameplay code .cpp files.
 */
 
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "MySys/HelperLib.h"
 #include "GlobSingletonHelperLib.generated.h"
 

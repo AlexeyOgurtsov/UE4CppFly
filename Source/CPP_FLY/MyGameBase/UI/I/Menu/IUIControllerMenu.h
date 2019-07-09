@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Templates/SubclassOf.h"
+#include "UObject/Interface.h"
 #include "IUIControllerMenu.generated.h"
 
 class UUserWidget;

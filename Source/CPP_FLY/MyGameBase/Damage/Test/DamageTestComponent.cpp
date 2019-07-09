@@ -3,6 +3,9 @@
 #include "MyGameBase/Damage/I/DamageableHelperLib.h"
 #include "MySys/HelperLib.h"
 
+#include "GameFramework/DamageType.h"
+#include "GameFramework/Actor.h"
+
 UDamageTestComponent::UDamageTestComponent()
 {	
 }

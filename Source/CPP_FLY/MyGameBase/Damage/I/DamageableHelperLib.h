@@ -4,6 +4,7 @@
 * Helper getters for the IDamageable and IDamageableContainer interfaces.
 */
 
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "IDamageable.h"
 #include "IDamageableContainer.h"
 

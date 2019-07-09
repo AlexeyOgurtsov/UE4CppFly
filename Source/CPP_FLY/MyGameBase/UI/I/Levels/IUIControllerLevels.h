@@ -4,6 +4,7 @@
 * Methods for loading levels and starting new game.
 */
 
+#include "UObject/Interface.h"
 #include "IUIControllerLevels.generated.h"
 
 UINTERFACE(BlueprintType)

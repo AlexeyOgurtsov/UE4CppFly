@@ -1,5 +1,6 @@
 #pragma once
 
+#include "UObject/Interface.h"
 #include "IMyComponent.generated.h"
 
 class AActor;

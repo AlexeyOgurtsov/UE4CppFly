@@ -3,12 +3,12 @@
 #include "MyGameBase/Pawn/I/ITrackPawnMovement.h"
 #include "MyGameBase/I/IWeaponInventory.h"
 #include "MyGameBase/Damage/I/DamageableHelperLib.h"
-
 #include "MyGameBase/Player/UI/MyUIControllerComponent.h"
-
 #include "MyGameBase/Player/Test/I/ITestController.h"
 
 #include "Util/Component/MyComponentLib.h"
+
+#include "GameFramework/Pawn.h"
 
 /**
 * Internal utils for PC implementation

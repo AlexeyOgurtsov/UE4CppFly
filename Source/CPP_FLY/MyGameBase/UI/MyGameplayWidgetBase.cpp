@@ -1,6 +1,7 @@
 #include "MyGameplayWidgetBase.h"
 
 #include "I/IUIController.h"
+#include "I/Gameplay/IUIControllerGameplay.h"
 
 #include "MyGameBase/Damage/I/IDamageableContainer.h"
 #include "MyGameBase/Damage/I/IDamageable.h"

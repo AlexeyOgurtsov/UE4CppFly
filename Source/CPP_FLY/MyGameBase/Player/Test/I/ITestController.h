@@ -4,6 +4,7 @@
 * Interface for all test controllers.
 */
 
+#include "UObject/Interface.h"
 #include "ITestController.generated.h"
 
 UINTERFACE()

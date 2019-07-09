@@ -5,6 +5,7 @@
 * Typically some Actor implements this interface to provide access to the UDamageableComponent.
 */
 
+#include "UObject/Interface.h"
 #include "IDamageableContainer.generated.h"
 
 class IDamageable;

@@ -4,6 +4,7 @@
 * Methods for saving and loading the game.
 */
 
+#include "UObject/Interface.h"
 #include "IUIControllerSaveLoad.generated.h"
 
 class UUIControllerSaveLoadEvents;

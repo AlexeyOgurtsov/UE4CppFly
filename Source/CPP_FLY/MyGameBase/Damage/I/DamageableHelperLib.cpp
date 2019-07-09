@@ -1,4 +1,5 @@
 #include "DamageableHelperLib.h"
+#include "GameFramework/Actor.h"
 #include "MySys/HelperLib.h"
 
 UDamageableHelperLib::UDamageableHelperLib()

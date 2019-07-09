@@ -3,6 +3,9 @@
 #include "Util/UI/ShowMouseStack.h"
 #include "Util/UI/InputModeStack.h"
 #include "Util/UI/UIUtilLib.h"
+#include "Util/Core/LogUtilLib.h"
+#include "Util/Core/MyDebugMacros.h"
+#include "GameFramework/DamageType.h"
 
 UUIControllerComponentEnvBaseLib::UUIControllerComponentEnvBaseLib()
 {
@@ -15,7 +18,7 @@ void UUIControllerComponentEnvBaseLib::PushInputAndCursor_GameOnly(UUIController
 	Env->GetInputModeStack()->Push(Mode);
 	if( Env->GetDebugParams().ShouldSetInputModeManually() )
 	{
-		UE_LOG(MyLog, Warning, TEXT("Setting up input mode manully..."));
+		M_LOG(TEXT("Setting up input mode manully..."));
 		UUIUtilLib::SetInputMode_GameOnly(Env->GetPC());
 	}
 
@@ -29,7 +32,7 @@ void UUIControllerComponentEnvBaseLib::PushInputAndCursor_UIOnly(UUIControllerCo
 	Env->GetInputModeStack()->Push(Mode);
 	if( Env->GetDebugParams().ShouldSetInputModeManually() )
 	{
-		UE_LOG(MyLog, Warning, TEXT("Setting up input mode manully..."));
+		M_LOG(TEXT("Setting up input mode manully..."));
 		UUIUtilLib::SetInputMode_UIOnly(Env->GetPC(), InWidget);
 	}
 	Env->GetShowMouseStack()->Push(true);
@@ -42,7 +45,7 @@ void UUIControllerComponentEnvBaseLib::PushInputAndCursor_GameAndUI(UUIControlle
 	Env->GetInputModeStack()->Push(Mode);
 	if( Env->GetDebugParams().ShouldSetInputModeManually() )
 	{
-		UE_LOG(MyLog, Warning, TEXT("Setting up input mode manully..."));
+		M_LOG(TEXT("Setting up input mode manully..."));
 		UUIUtilLib::SetInputMode_GameAndUI(Env->GetPC(), InWidget);
 	}
 

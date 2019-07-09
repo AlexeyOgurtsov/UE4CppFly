@@ -1,6 +1,6 @@
 #include "WidgetClassStackLib.h"
 #include "Util/UI/UIUtilLib.h"
-#include "MySys/HelperLib.h"
+#include "../Core/LogUtilLib.h"
 
 EWidgetStackElementType FWidgetClassStackElement::GetElementType() const	
 {

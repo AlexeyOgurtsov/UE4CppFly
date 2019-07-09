@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "UIControllerComponentDebugConfigLib.generated.h"
 
 USTRUCT(BlueprintType)

@@ -1,7 +1,7 @@
 #include "WidgetStack.h"
 #include "Kismet/GameplayStatics.h"
 #include "UIUtilLib.h"
-#include "Util/Core/LogUtilLib.h"
+#include "../Core/LogUtilLib.h"
 
 UWidgetStack::UWidgetStack()
 {

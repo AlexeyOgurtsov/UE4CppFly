@@ -4,6 +4,7 @@
 * SaveGame save/load functions that do NO interfere with UI .
 */
 
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "SaveLoadLib.generated.h"
 
 UCLASS()

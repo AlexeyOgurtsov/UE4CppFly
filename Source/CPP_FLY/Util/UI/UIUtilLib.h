@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Kismet/BlueprintFunctionLibrary.h"
+#include "Blueprint/UserWidget.h"
 #include "UIUtilLib.generated.h"
 
 class UUserWidget;

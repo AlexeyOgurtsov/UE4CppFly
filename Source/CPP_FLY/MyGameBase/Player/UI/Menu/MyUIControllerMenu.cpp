@@ -3,6 +3,7 @@
 #include "Util/UI/UIUtilLib.h"
 #include "MyGameBase/UI/I/Menu/UIControllerMenuEvents.h"
 #include "MyGameBase/Player/UI/UIControllerComponentBase.h"
+#include "MyGameBase/Player/UI/MyUIControllerComponent.h"
 #include "MyGameBase/Player/UI/MyUIControllerComponentEnv.h"
 #include "MyGameBase/Player/UI/UIControllerComponentEnvBaseLib.h"
 #include "MySys/HelperLib.h"
@@ -183,7 +184,7 @@ bool UMyUIControllerMenu::IsWidgetClassOnTop(TSubclassOf<UUserWidget> InWidgetCl
 	}
 	else
 	{
-		return WidgetStack->TopCreatorElement().WidgetClass;
+		return WidgetStack->TopCreatorElement().WidgetClass == InWidgetClass;
 	}
 }
 
