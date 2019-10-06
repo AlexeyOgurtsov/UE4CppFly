@@ -1,0 +1,5 @@
+Movement on the spline.
+
+*****
+Spline movement component - makes the attached object to follow the spline.
+	

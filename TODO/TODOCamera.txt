@@ -1,0 +1,3 @@
+** 
+* Goal: Make good robust camera (minimal camera is handled inside the initial setup).
+*

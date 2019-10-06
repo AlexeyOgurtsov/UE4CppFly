@@ -1,4 +1,13 @@
 #include "LogUtilLib.h"
+#include "Math/Vector.h"
+#include "Math/Vector2D.h"
+#include "Math/Vector4.h"
+#include "Math/Rotator.h"
+#include "Math/Quat.h"
+#include "Math/Plane.h"
+#include "Math/Transform.h"
+#include "Math/TranslationMatrix.h"
+#include "Math/RotationMatrix.h"
 
 DEFINE_LOG_CATEGORY(MyLog);
 
@@ -26,10 +35,16 @@ FString ULogUtilLib::GetNameAndClassSafe(const UObject* const InObject)
 
 FString ULogUtilLib::GetNameAndClassScoped(const UObject* const InObject)
 {
-	check(InObject);
 	FString Result;
 	Result.Append(TEXT("("));
-	Result.Append(GetNameAndClass(InObject));
+	if(InObject)
+	{
+		Result.Append(GetNameAndClass(InObject));
+	}
+	else
+	{
+		Result.Append(TEXT("nullptr"));
+	}
 	Result.Append(TEXT(")"));
 	return Result;
 }
@@ -57,6 +72,195 @@ void ULogUtilLib::LogKeyedNameClassSafe(const FString& InKey, const UObject* con
 void ULogUtilLib::LogKeyedNameClassSafeC(const TCHAR* InKey, const UObject* const InObject)
 {
 	M_LOG(TEXT("%s"), *GetKeyedNameAndClassC(InKey, InObject));
+}
+
+void ULogUtilLib::LogKeyedNameClassSafeIf(bool const bInShouldLog, const FString& InKey, const UObject* const InObject)
+{
+	LogKeyedNameClassSafeIfC(bInShouldLog, *InKey, InObject);
+}
+
+void ULogUtilLib::LogKeyedNameClassSafeIfC(bool const bInShouldLog, const TCHAR* const InKey, const UObject* const InObject)
+{
+	if(bInShouldLog)
+	{
+		LogKeyedNameClassSafeC(InKey, InObject);
+	}
+}
+
+void ULogUtilLib::LogVector(const FString& InKey, const FVector& InVector)
+{
+	LogVectorC(*InKey, InVector);
+}
+
+void ULogUtilLib::LogVectorC(const TCHAR* InKey, const FVector& InVector)
+{
+	LogStringC(InKey, InVector.ToString());
+}
+
+void ULogUtilLib::LogVectorIf(bool bInShouldLog, const FString& InKey, const FVector& InVector)
+{
+	LogVectorIfC(bInShouldLog, *InKey, InVector);
+}
+
+void ULogUtilLib::LogVectorIfC(bool bInShouldLog, const TCHAR* InKey, const FVector& InVector)
+{
+	if(bInShouldLog)
+	{
+		LogVectorC(InKey, InVector);
+	}
+}
+
+void ULogUtilLib::LogVector2DC(const TCHAR* InKey, const FVector2D& InVector)
+{
+	LogStringC(InKey, InVector.ToString());
+}
+
+void ULogUtilLib::LogVector2D(const FString& InKey, const FVector2D& InVector)
+{
+	LogVector2DC(*InKey, InVector);
+}
+
+
+void ULogUtilLib::LogVector2DIf(bool bInShouldLog, const FString& InKey, const FVector2D& InVector)
+{
+	LogVector2DIfC(bInShouldLog, *InKey, InVector);
+}
+
+void ULogUtilLib::LogVector2DIfC(bool bInShouldLog, const TCHAR* InKey, const FVector2D& InVector)
+{
+	if(bInShouldLog)
+	{
+		LogVector2DC(InKey, InVector);
+	}
+}
+
+void ULogUtilLib::LogVector4(const FString& InKey, const FVector4& InVector)
+{
+	LogVector4C(*InKey, InVector);
+}
+
+void ULogUtilLib::LogVector4C(const TCHAR* InKey, const FVector4& InVector)
+{
+	LogStringC(InKey, InVector.ToString());
+}
+
+void ULogUtilLib::LogVector4If(bool bInShouldLog, const FString& InKey, const FVector4& InVector)
+{
+	LogVector4IfC(bInShouldLog, *InKey, InVector);
+}
+
+void ULogUtilLib::LogVector4IfC(bool bInShouldLog, const TCHAR* InKey, const FVector4& InVector)
+{
+	if(bInShouldLog)
+	{
+		return;
+	}
+}
+
+void ULogUtilLib::LogRotator(const FString& InKey, const FRotator& InRotator)
+{
+	LogRotatorC(*InKey, InRotator);
+}
+
+void ULogUtilLib::LogRotatorC(const TCHAR* InKey, const FRotator& InRotator)
+{
+	LogStringC(InKey, InRotator.ToString());
+}
+
+void ULogUtilLib::LogRotatorIf(bool bInShouldLog, const FString& InKey, const FRotator& InRotator)
+{
+	LogRotatorIfC(bInShouldLog, *InKey, InRotator);
+}
+
+void ULogUtilLib::LogRotatorIfC(bool bInShouldLog, const TCHAR* InKey, const FRotator& InRotator)
+{
+	if(bInShouldLog)
+	{
+		LogRotatorC(InKey, InRotator);
+	}
+}
+
+void ULogUtilLib::LogQuat(const FString& InKey, const FQuat& InQuat)
+{
+	LogQuatC(*InKey, InQuat);
+}
+
+void ULogUtilLib::LogQuatC(const TCHAR* InKey, const FQuat& InQuat)
+{
+	FVector Axis;
+	float Angle;
+	InQuat.ToAxisAndAngle(Axis, Angle);
+
+	TArray<FStringFormatArg> const FormatArgs
+	{
+		InQuat.ToString(),
+		Axis.ToString(),
+		Angle,
+		InQuat.Rotator().ToString()
+	};
+
+	LogStringC(InKey, FString::Format(TEXT("{0} [Axis={1} Angle={2}] { {3} }"), FormatArgs));
+}
+
+void ULogUtilLib::LogQuatIf(bool bInShouldLog, const FString& InKey, const FQuat& InQuat)
+{
+	LogQuatIfC(bInShouldLog, *InKey, InQuat);
+}
+
+void ULogUtilLib::LogQuatIfC(bool bInShouldLog, const TCHAR* InKey, const FQuat& InQuat)
+{
+	if(bInShouldLog)
+	{
+		LogQuatC(InKey, InQuat);
+	}
+}
+
+void ULogUtilLib::LogTransform(const FString& InKey, const FTransform& InTransform)
+{
+	LogTransformC(*InKey, InTransform);
+}
+
+void ULogUtilLib::LogTransformC(const TCHAR* InKey, const FTransform& InTransform)
+{
+	LogVectorC(*FString::Printf(TEXT("%s.Translation"), InKey), InTransform.GetTranslation());
+	LogQuatC(*FString::Printf(TEXT("%s.Rotation"), InKey), InTransform.GetRotation());
+	LogVectorC(*FString::Printf(TEXT("%s.Scale3D"), InKey), InTransform.GetScale3D());
+}
+
+void ULogUtilLib::LogTransformIf(bool bInShouldLog, const FString& InKey, const FTransform& InTransform)
+{
+	LogTransformIfC(bInShouldLog, *InKey, InTransform);
+}
+
+void ULogUtilLib::LogTransformIfC(bool bInShouldLog, const TCHAR* InKey, const FTransform& InTransform)
+{
+	if(bInShouldLog)
+	{
+		LogTransformC(InKey, InTransform);
+	}
+}
+
+void ULogUtilLib::LogPlane(const FString& InKey, const FPlane& InPlane)
+{
+	LogPlaneC(*InKey, InPlane);
+}
+
+void ULogUtilLib::LogPlaneC(const TCHAR* InKey, const FPlane& InPlane)
+{
+	LogStringC(InKey, InPlane.ToString());
+}
+
+void ULogUtilLib::LogPlaneIf(bool bInShouldLog, const FString& InKey, const FPlane& InPlane)
+{
+	LogPlaneIfC(bInShouldLog, *InKey, InPlane);
+}
+
+void ULogUtilLib::LogPlaneIfC(bool bInShouldLog, const TCHAR* InKey, const FPlane& InPlane)
+{
+	if(bInShouldLog)
+	{
+		LogPlaneC(InKey, InPlane);
+	}
 }
 
 FString ULogUtilLib::GetYesNo(bool const bYes)

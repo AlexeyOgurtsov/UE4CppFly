@@ -1,0 +1,66 @@
+-- Today:
+SaveGame system;
+1. SaveGame framework:
+1.1. USaveLoad blueprint library - to be accessible everywhere;
+1.2. USaveLoadLib: works only with USaveLoad, does NOT touch world itself!!!;
+1.3. Save load world lib
+1.4. Save load service lib
+1.5. Integrate Save Load Service calls into UI Controller.
+
+-- Tomorrow:
+
+-- Later
+3. Calling "Controller Ready" for widget:
+3.1. Should it be called once when controller is ready or multiple times?
+
+Bugs:
+4. Garbage collection error:
+4.1. See HUD Widget
+4.2. See input mode structure
+5. Not for all IMyComponent NotifyReady is called from controller;
+
+1. Add Cursor when entering menu;
+2. "CanReturnBack"
+2.1. Events for the state changes.
+
+Access:
+1.1. GetMenu()
+1.2. 
+
+Initialization of menu:
+1.1) Where to bind events?
+1.2)  Where to initialize menu?
+
+Clean up the ControllerBase class:
+1. Widgets.
+
+DebugMenu:
+
+--------------------------------------------
+Later:
+
+1. Camera management
+1.0. No camera
+1.1. Camera axis does NOT control camera
+
+2.  Initial content:
+2.1. Player pawn
+2.2. Bullet
+
+3. Projectile base class
+
+4. UI:
+4.1. UI Controller:
+4.1.1. Separate into a set of subinterfaces:
+4.1.1.1. Menu interface 
+4.1.1.1.1 OpenMenuUI(Sender, MenuClass)
+4.1.1.2. Save game interface
+4.1.1.3. Game levels interface
+4.1.1.3.1. Load level
+4.1.1.4. Gameplay-related:
+4.1.1.4.0. Consider using a separate Widget class (for gameplay HUDs)
+4.1.1.4.1. Access to inventory, etc.
+
+5. Components:
+5.1. We temporarily choose components in the BeginPlay,
+because inside the PreRegisterAllComponents BP-made components are NOT available;

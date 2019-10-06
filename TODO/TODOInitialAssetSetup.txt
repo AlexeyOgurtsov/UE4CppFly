@@ -1,0 +1,6 @@
+/**
+* - Get initial content (meshes etc.);
+* - import and setup it for player and other actors
+* - setup minimal camera;
+* - design and provide basic framework.
+*/

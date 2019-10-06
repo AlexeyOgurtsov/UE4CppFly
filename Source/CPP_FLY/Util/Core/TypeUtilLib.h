@@ -25,5 +25,19 @@ public:
 	*/
 	UFUNCTION(BlueprintPure, Category = TypeUtilLib)
 	static int32 FindEnumIndexByNameChecked(const FString& InEnumName, const FString& InString);
+
+	// @TODO: UnresolvedExternal StaticEnum
+	template<class EnumT>
+	static FString EnumToString(EnumT const InEnumValue)
+	{
+		const UEnum* const Enum = StaticEnum<EnumT>();
+		return Enum->GetNameByIndex(static_cast<uint8>(InEnumValue)).ToString();
+	}
+
+	template<class EnumT>
+	static const TCHAR* EnumToCString(EnumT const InEnumValue)
+	{
+		return *EnumToString(InEnumValue);
+	}
 	// ~Enums End
 };
