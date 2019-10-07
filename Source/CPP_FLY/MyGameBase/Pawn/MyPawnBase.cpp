@@ -11,6 +11,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 
+#include "Engine/World.h"
+
 AMyPawnBase::AMyPawnBase()
 {
 	// Setting up the root scene component
@@ -65,9 +67,12 @@ void AMyPawnBase::EndPlay(const EEndPlayReason::Type InReason)
 
 float AMyPawnBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if(DamageableComponent)
+	if(GetWorld()->IsGameWorld())
 	{
-		return IDamageable::Execute_MakeDamage(DamageableComponent, NewObject<UDamageType>(DamageEvent.DamageTypeClass), DamageAmount);
+		if(DamageableComponent)
+		{
+			return IDamageable::Execute_MakeDamage(DamageableComponent, NewObject<UDamageType>(DamageEvent.DamageTypeClass), DamageAmount);
+		}
 	}
 	return 0.0F;
 }
@@ -108,13 +113,16 @@ TScriptInterface<IMyController> AMyPawnBase::GetPC() const
 
 void AMyPawnBase::PostInitialize_DamageableComponent(UDamageableComponent* InComponent)
 {
-	if(UDamageableEvents* TheEvents = IDamageable::Execute_GetEvents(InComponent))
+	if(GetWorld()->IsGameWorld())
 	{
-		TheEvents->StateChanged.AddDynamic(this, &AMyPawnBase::OnDamageableComponent_DamageStateChanged);
-	}
-	else
-	{
-		UE_LOG(MyLog, Warning, TEXT("GetEvents returned nullptr for the given damageable component"));
+		if(UDamageableEvents* TheEvents = IDamageable::Execute_GetEvents(InComponent))
+		{
+			TheEvents->StateChanged.AddDynamic(this, &AMyPawnBase::OnDamageableComponent_DamageStateChanged);
+		}
+		else
+		{
+			UE_LOG(MyLog, Warning, TEXT("GetEvents returned nullptr for the given damageable component"));
+		}
 	}
 }
 
@@ -146,6 +154,7 @@ void AMyPawnBase::OnProximityComponent_EndOverlap
 
 void AMyPawnBase::OnDamageableComponent_DamageStateChanged(const FDamageableStateChangedParams& InParams)
 {
+	checkf(GetWorld()->IsGameWorld(), TEXT("This function should only be called in Game-type worlds!"));
 	if(TScriptInterface<IMyController> PC = GetPC())
 	{
 		IMyController::Execute_Pawn_CharsUpdated(PC.GetObject());

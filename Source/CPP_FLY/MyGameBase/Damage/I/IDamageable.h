@@ -16,6 +16,10 @@ class UDamageable : public UInterface
 public:
 };
 
+/**
+* Functions of this interface should only be called
+* in game-type worlds (never to be called in editor!)
+*/
 class IDamageable
 {
 	GENERATED_BODY()

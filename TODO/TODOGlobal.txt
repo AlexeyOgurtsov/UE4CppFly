@@ -1,7 +1,5 @@
-Fix bug
-1. BPCompile_MyPlayerPawn
 
 ------------------------------
 1. Initial asset setup
-2. Camera
+2. Camera (see InitialCamera TODO)
 3. Movement setup
