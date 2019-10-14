@@ -57,24 +57,36 @@ protected:
 	// ~Scene components Begin
 	/**
 	* The root scene component that all other scene components to be attached to.
+	* Warning! It's attached to the ProximityComponent, NOT vice versa!
 	*/
 	UFUNCTION(BlueprintPure, Category = Components)
 	USceneComponent* GetRootSceneComponent() const { return RootSceneComponent; }
 
 	/**
 	* Primitive component to be used for proximity collisions (e.g. pickups).
+	* Warning: It's really a root
+	* @see: GetRootSceneComponent()
 	*/
 	UFUNCTION(BlueprintPure, Category = Collision)
 	UPrimitiveComponent* GetProximityComponent() const { return ProximityComponent; }
 
 	/**
-	* Setup primitive component to be used for proximity collisions (e.g. pickups).
-	* Call only when you use dynamic components or C++, should NOT be called for static blueprint components.
+	* Setups the whole set of default component, necessary for any pawn.
+	* WARNING!!! Must always be called from CTOR in the concrete subclass of Pawn,
+	* right after the Root Proximity Component is created!
 	*
-	* Calls SetupAttachment;
+	* Setup the fiven primitive component so that it:
+	* 1) will be the RootComponent
+	* 2) will be used for proximity collisions (e.g. pickups)
+	*
+	* Setups RootSceneComponent and attaches it to the Root Proximity Component.
+	*
+	* Setups default scene components attached to RootSceneComponent (camera etc.).
+	*
+	* Call only when you use dynamic components or C++, should NOT be called for static blueprint components.
 	*/
 	UFUNCTION(BlueprintCallable, Category = Collision)
-	void SetupProximityComponentAttachment(UPrimitiveComponent* InProxComponent);
+	void SetupDefaultComponents_RootProximityAndOthers(UPrimitiveComponent* InProxComponent);
 	// ~Scene components End
 
 	// ~Camera Begin
@@ -100,6 +112,9 @@ private:
 	// ~Actor components End
 
 	// ~Scene components Begin
+	void InitDefaultComponents(USceneComponent* AttachTo);
+	void InitDefaultCameraComponents(USceneComponent* AttachTo);
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Meta = (AllowPrivateAccess = true), Category = Components)
 	USceneComponent* RootSceneComponent = nullptr;
 

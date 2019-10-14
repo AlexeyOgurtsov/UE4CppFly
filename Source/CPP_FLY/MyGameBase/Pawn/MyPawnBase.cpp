@@ -13,25 +13,39 @@
 
 #include "Engine/World.h"
 
-AMyPawnBase::AMyPawnBase()
+void AMyPawnBase::InitDefaultComponents(USceneComponent* AttachTo)
 {
-	// Setting up the root scene component
-	RootComponent = RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootSceneComponent"));
-	check(RootSceneComponent);
+	checkf(AttachTo, TEXT("Component to attach to must be set"));
+
+	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootSceneComponent"));
+	RootSceneComponent->SetupAttachment(AttachTo);
+
+	InitDefaultCameraComponents(RootSceneComponent);
+}
+
+void AMyPawnBase::InitDefaultCameraComponents(USceneComponent* AttachTo)
+{
+	checkf(AttachTo, TEXT("Component to attach to must be set"));
 
 	// ~ Camera initialization Begin
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
 	SpringArm->bUsePawnControlRotation = false;
-	SpringArm->bInheritPitch = SpringArm->bInheritYaw = SpringArm->bInheritRoll = false;
+	SpringArm->bInheritPitch = SpringArm->bInheritYaw = SpringArm->bInheritRoll = true;
 	SpringArm->SetRelativeLocation(FVector{-400.F, 0, 500.F});
 	SpringArm->TargetArmLength = 400.F;
-	SpringArm->SetupAttachment(RootSceneComponent);
+	SpringArm->SetupAttachment(AttachTo);
 	
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
-
-	DamageableComponent = CreateDefaultSubobject<UDamageableComponent>(TEXT("Damageable"));
 	// ~ Camera initialization End
+}
+
+AMyPawnBase::AMyPawnBase()
+{
+	// WARNING! Never setup default components here!
+	// They're to be set up when Initializing default components by explicit call to SetupRootProximityComponent()
+	// inside the concrete subclass of pawn
+	DamageableComponent = CreateDefaultSubobject<UDamageableComponent>(TEXT("Damageable"));
 }
 
 TScriptInterface<IDamageable> AMyPawnBase::GetDamageable_Implementation() const
@@ -39,12 +53,13 @@ TScriptInterface<IDamageable> AMyPawnBase::GetDamageable_Implementation() const
 	return DamageableComponent;
 }
 
-void AMyPawnBase::SetupProximityComponentAttachment(UPrimitiveComponent* InProxComponent)
+void AMyPawnBase::SetupDefaultComponents_RootProximityAndOthers(UPrimitiveComponent* InProxComponent)
 {
-	checkf(RootSceneComponent, TEXT("AMyPawnBase::AttachProximityComponent: root scene component must be set before calling AttachProximityComponent"));
-	checkf(nullptr == ProximityComponent, TEXT("AMyPawnBase::AttachProximityComponent: proximity component is already attached"));
-	ProximityComponent = InProxComponent;
-	ProximityComponent->SetupAttachment(RootSceneComponent);
+	checkf(InProxComponent, TEXT("Assigned proximity component must always be valid"));
+	checkf(nullptr == ProximityComponent, TEXT("Root proximity component is already attached"));
+	RootComponent = InProxComponent;
+
+	InitDefaultComponents(InProxComponent);
 }
 
 void AMyPawnBase::BeginPlay()
