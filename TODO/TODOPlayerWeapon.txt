@@ -1,0 +1,26 @@
+1. Setup projectile hierarchy
+2. Setup weapon for proto pawn
+
+-------------------------------------------------
+---- Minimal weapon component:
+- Design to be used both player and enemies;
+- Allows to fire projectiles of the given classes;
+- Automatically searches for the socket;
+- Allows to setup offset from socket;
+
+TODO:
+1. Weapon component base class;
+2. Weapon component
+3. Weapon fire infrastructure
+-------------------------------------------------
+Weapon fire infrastructure:
+1. Setup APawnBase::GetWeapons()
+2. Set APCBase::GetPawnWeapons() (+DONE)
+3. Create the UWeaponComponent inside the UPawn
+4. Test
+
+-------------------------------------------------
+--- 1. Setup projectile hierarchy
+
+- Projectile base class (+DONE)
+- Rocket projectile inherited from the base projectile class (+DONE)

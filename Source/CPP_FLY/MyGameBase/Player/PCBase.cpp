@@ -2,6 +2,7 @@
 #include "MyEngine/MyEngineHelperLib.h"
 #include "MyGameBase/Pawn/I/ITrackPawnMovement.h"
 #include "MyGameBase/I/IWeaponInventory.h"
+#include "MyGameBase/I/IWeaponInventoryHolder.h"
 #include "MyGameBase/Damage/I/DamageableHelperLib.h"
 #include "MyGameBase/Player/UI/MyUIControllerComponent.h"
 #include "MyGameBase/Player/Test/I/ITestController.h"
@@ -267,7 +268,12 @@ TScriptInterface<ITrackPawnMovement> APCBase::GetPawnMovement() const
 
 TScriptInterface<IWeaponInventory> APCBase::GetPawnWeapons() const
 {
-	return TScriptInterface<IWeaponInventory>(GetPawn());
+	TScriptInterface<IWeaponInventoryHolder> PawnWeaponHolder(GetPawn());
+	if(PawnWeaponHolder.GetInterface())
+	{
+		return PawnWeaponHolder->GetWeapons();
+	}
+	return nullptr;
 }
 
 TScriptInterface<IDamageableContainer> APCBase::GetPawnDamageableContainer() const

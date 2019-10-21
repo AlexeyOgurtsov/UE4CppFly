@@ -13,11 +13,20 @@
 
 #include "Engine/World.h"
 
+#include "Util/Core/LogUtilLib.h"
+
 void AMyPawnBase::InitDefaultComponents(USceneComponent* AttachTo)
 {
 	checkf(AttachTo, TEXT("Component to attach to must be set"));
 
 	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootSceneComponent"));
+
+	// WRONG solution!
+	// Set so that root scene component is never transformed
+	// when the root collision mesh is transformed
+	// (transform is to be relative to mesh, rather than relative to parent component).
+	//RootSceneComponent->SetAbsolute(true, true, true);
+
 	RootSceneComponent->SetupAttachment(AttachTo);
 
 	InitDefaultCameraComponents(RootSceneComponent);
@@ -179,4 +188,9 @@ void AMyPawnBase::OnDamageableComponent_DamageStateChanged(const FDamageableStat
 			IMyController::Execute_Pawn_DestructionStarted(PC.GetObject());
 		}
 	}
+}
+
+TScriptInterface<IWeaponInventory> AMyPawnBase::GetWeapons_Implementation() const
+{
+	return nullptr; M_TO_BE_IMPL(TEXT("AMyPawnBase::GetWeapons"));
 }

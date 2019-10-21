@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "MyGameBase/Damage/I/IDamageableContainer.h"
 #include "MyGameBase/Damage/I/DamageableEvents.h"
+#include "MyGameBase/I/IWeaponInventoryHolder.h"
 #include "MyPawnBase.generated.h"
 
 class IMyController;
@@ -22,6 +23,7 @@ UCLASS(Blueprintable)
 class AMyPawnBase : 
 	public APawn
 ,	public IDamageableContainer
+,	public IWeaponInventoryHolder
 {
 	GENERATED_BODY()
 
@@ -36,6 +38,10 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+	// ~ IWeaponInventoryHolder Begin
+	virtual TScriptInterface<IWeaponInventory> GetWeapons_Implementation() const override;
+	// ~ IWeaponInventoryHolder End
+	
 	// ~ IDamageableContainer Begin
 	virtual TScriptInterface<IDamageable> GetDamageable_Implementation() const override;
 	// ~ IDamageableContainer End
