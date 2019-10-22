@@ -1,5 +1,9 @@
 #pragma once
 
+/**
+* All weapon inventory components are to be inherited from this class.
+*/
+
 #include "Components/ActorComponent.h"
 #include "MyGameBase/I/IWeaponInventory.h"
 #include "WeaponComponent.generated.h"
@@ -14,9 +18,10 @@ class UWeaponComponent :
 public:
 	UWeaponComponent();
 	
-	// ~ IWeaponInventory Begin
+	// ~ IWeaponInventory DEFAULT implementation Begin
+	// Super NEVER to be called!
 	virtual void Fire_Implementation(int32 InWeaponIndex) override;
-	// ~ IWeaponInventory End
+	// ~ IWeaponInventory DEFAULT End
 
 protected:
 private:

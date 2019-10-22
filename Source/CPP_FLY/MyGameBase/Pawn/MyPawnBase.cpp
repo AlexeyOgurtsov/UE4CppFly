@@ -2,6 +2,7 @@
 #include "MyEngine/MyEngineHelperLib.h"
 #include "MyGameBase/Controller/I/IMyController.h"
 #include "MyGameBase/Damage/DamageableComponent.h"
+#include "MyGame/Weapon/QuickWeaponComponent.h"
 
 #include "Engine/EngineTypes.h"
 #include "GameFramework/DamageType.h"
@@ -51,10 +52,11 @@ void AMyPawnBase::InitDefaultCameraComponents(USceneComponent* AttachTo)
 
 AMyPawnBase::AMyPawnBase()
 {
-	// WARNING! Never setup default components here!
+	// WARNING! Never setup default scene components here!
 	// They're to be set up when Initializing default components by explicit call to SetupRootProximityComponent()
 	// inside the concrete subclass of pawn
 	DamageableComponent = CreateDefaultSubobject<UDamageableComponent>(TEXT("Damageable"));
+	WeaponComponent = CreateDefaultSubobject<UQuickWeaponComponent>(TEXT("QuickWeaponComponent"));
 }
 
 TScriptInterface<IDamageable> AMyPawnBase::GetDamageable_Implementation() const
@@ -192,5 +194,5 @@ void AMyPawnBase::OnDamageableComponent_DamageStateChanged(const FDamageableStat
 
 TScriptInterface<IWeaponInventory> AMyPawnBase::GetWeapons_Implementation() const
 {
-	return nullptr; M_TO_BE_IMPL(TEXT("AMyPawnBase::GetWeapons"));
+	return TScriptInterface<IWeaponInventory>(WeaponComponent);
 }

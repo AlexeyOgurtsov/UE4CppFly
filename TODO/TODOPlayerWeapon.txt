@@ -1,23 +1,41 @@
-1. Setup projectile hierarchy
-2. Setup weapon for proto pawn
-
 -------------------------------------------------
 ---- Minimal weapon component:
 - Design to be used both player and enemies;
 - Allows to fire projectiles of the given classes;
 - Automatically searches for the socket;
 - Allows to setup offset from socket;
+---------------------------------------------------
 
 TODO:
 1. Weapon component base class;
 2. Weapon component
 3. Weapon fire infrastructure
+
+-------------------------------------------------
+--- Quick weapon component:
+
+FWeaponSocket:
+1. Weapon socket pointer
+
+FQuickWeaponInfo:
+1.
+
+Mapping FQuickWeaponInfo and FWeaponSocket
+
+
 -------------------------------------------------
 Weapon fire infrastructure:
 1. Setup APawnBase::GetWeapons()
 2. Set APCBase::GetPawnWeapons() (+DONE)
-3. Create the UWeaponComponent inside the UPawn
-4. Test
+3. Create the UWeaponComponent inside the UPawn (+DONE)
+4. 
+
+------- UWeaponComponent inside UPawn:
+1. 
+
+------- UWeaponComponent
+1. AActor: should we pass as argument when creating?
+2. Locating UStaticMeshComponent to use?
 
 -------------------------------------------------
 --- 1. Setup projectile hierarchy

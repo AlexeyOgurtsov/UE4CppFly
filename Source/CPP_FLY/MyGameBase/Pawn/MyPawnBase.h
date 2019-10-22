@@ -11,6 +11,7 @@
 
 class IMyController;
 
+class UWeaponComponent;
 class USceneComponent;
 class UPrimitiveComponent;
 class USpringArmComponent;
@@ -101,7 +102,7 @@ protected:
 	// ~Camera End
 
 private:
-	// ~Actor components Begin
+	// ~Damageable Component Begin
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Meta = (AllowPrivateAccess = true), Category = Damage)
 	UDamageableComponent* DamageableComponent = nullptr;
 
@@ -115,7 +116,12 @@ private:
 
 	UFUNCTION(BlueprintCallable, Category = Damage)
 	void OnDamageableComponent_DamageStateChanged(const FDamageableStateChangedParams& InParams);
-	// ~Actor components End
+	// ~Damageable Component End
+	
+	// ~ Weapon Component Begin
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Meta = (AllowPrivateAccess = true), Category = Weapon)
+	UWeaponComponent* WeaponComponent = nullptr;
+	// ~ Weapon Component End
 
 	// ~Scene components Begin
 	void InitDefaultComponents(USceneComponent* AttachTo);
