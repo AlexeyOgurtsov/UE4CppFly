@@ -71,18 +71,22 @@ struct FAttachedWeaponSocket
 	/**
 	* Creates static mesh socket;
 	*/
-	FAttachedWeaponSocket(UStaticMeshSocket* InSocket);
+	FAttachedWeaponSocket(const FWeaponSocketConfig& InSocketConfig, UStaticMeshSocket* InSocket);
 
 	/**
 	* Creates skeletal mesh socket;
 	*/
-	FAttachedWeaponSocket(USkeletalMeshSocket* InSocket);
+	FAttachedWeaponSocket(const FWeaponSocketConfig& InSocketConfig, USkeletalMeshSocket* InSocket);
 
+	const FWeaponSocketConfig& GetSocketConfig() const { return SocketConfig; }
 	EWeaponSocketType GetSocketType() const { return SocketType; }
 	UStaticMeshSocket* GetStaticMeshSocket() const { return StaticMeshSocket; }
 	USkeletalMeshSocket* GetSkeletalMeshSocket() const { return SkeletalMeshSocket; }
 
 private:
+	UPROPERTY()
+	FWeaponSocketConfig SocketConfig;
+
 	UPROPERTY(EditAnywhere)
 	EWeaponSocketType SocketType;
 
@@ -121,7 +125,7 @@ struct FQuickWeaponInventoryConfig
 
 	void RegisterSocket(FName InUniqueName, const FWeaponSocketConfig& InConfig);
 	void RegisterWeapon(FName InUniqueName, const FQuickWeaponConfig& InConfig);
-	const FWeaponSocketConfig& GetWeaponBySocketName(FName InSocket) const;
+	const FQuickWeaponConfig& GetWeaponBySocketName(FName InSocket) const;
 	void SetWeaponToSocketChecked(const FWeaponSocketConfig& InSocket, const FQuickWeaponConfig& InWeapon);
 	void SetWeaponToSocketChecked(FName InSocketName, FName InWeaponName);
 	const FQuickWeaponConfig& GetWeaponByIndex(int32 InIndex) const;
