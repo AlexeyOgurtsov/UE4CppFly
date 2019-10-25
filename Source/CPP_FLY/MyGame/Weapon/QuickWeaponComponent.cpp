@@ -5,6 +5,10 @@
 
 #include "Engine/World.h"
 
+#include "GameFramework/Actor.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+
 #include "Math/Transform.h"
 #include "Math/Vector.h"
 #include "Math/Rotator.h"
@@ -16,6 +20,43 @@ UQuickWeaponComponent::UQuickWeaponComponent()
 void UQuickWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void UQuickWeaponComponent::ReAttachToSockets()
+{
+	check(GetOwner());
+	UStaticMeshComponent* FirstStaticMesh = GetOwner()->FindComponentByClass<UStaticMeshComponent>();
+	USkeletalMeshComponent* FirstSkeletalMesh = GetOwner()->FindComponentByClass<USkeletalMeshComponent>();
+
+	for(const FWeaponComponentSocketRef& SocketRef : SocketsToAttach)
+	{
+		UObject* SubobjectWithComponentName = nullptr;
+		if(SocketRef.IsBindedToComponent())
+		{
+			SubobjectWithComponentName = GetOwner()->GetDefaultSubobjectByName(SocketRef.SocketName);
+			if(SubobjectWithComponentName == nullptr)
+			{
+				M_LOG(TEXT("Component with name \"%s\" is not found"), *SocketRef.ComponentName.ToString());
+			}
+			else
+			{
+				checkf(SubobjectWithComponentName, TEXT("Subobject with component name is NOT nullptr (we are on the corresponding if branch)"));
+				AttachSocketToComponent(SocketRef.SocketName, Cast<UActorComponent>(SubobjectWithComponentName));
+			}
+		}
+		else
+		{
+			UMeshComponent* FirstMeshComponent = (FirstStaticMesh != nullptr) ? (Cast<UMeshComponent>(FirstStaticMesh)) : (Cast<UMeshComponent>(FirstSkeletalMesh));
+			if(FirstMeshComponent == nullptr)
+			{
+				M_LOG(TEXT("Unable to attach socket by reference NON-binded to component: no socket-holding component found on the owning actor"));
+			}
+			else
+			{
+				AttachSocketToComponent(SocketRef.SocketName, FirstMeshComponent);
+			}
+		}
+	}
 
 	Weapons.Reset();
 	for(const TPair<FName, FQuickWeaponConfig>& NameConfig : Config.Weapons)
@@ -23,6 +64,24 @@ void UQuickWeaponComponent::BeginPlay()
 		Weapons.Add(NameConfig.Key, UQuickWeaponTypesLib::CreateWeaponState(this, NameConfig.Key, NameConfig.Value));
 	}
 }
+
+void UQuickWeaponComponent::AttachSocketToComponent(FName InWeaponSocketName, UActorComponent* Component)
+{
+	checkf(Component, TEXT("Passed component must be valid NON-null pointer"));
+	if(Component->IsA(UStaticMeshComponent::StaticClass()))
+	{
+		AttachSocketToMesh(InWeaponSocketName, CastChecked<UStaticMeshComponent>(Component));
+	}
+	else if(Component->IsA(USkeletalMeshComponent::StaticClass()))
+	{
+		AttachSocketToSkeletalMesh(InWeaponSocketName, CastChecked<USkeletalMeshComponent>(Component));
+	}
+	else
+	{
+		M_LOG(TEXT("Component with name \"%s\" has unsupported class \"%s\""), *Component->GetName(), *Component->GetClass()->GetName());
+	}
+}
+
 
 void UQuickWeaponComponent::Fire_Implementation(int32 const InWeaponIndex)
 {
