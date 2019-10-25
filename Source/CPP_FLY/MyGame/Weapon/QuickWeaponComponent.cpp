@@ -9,23 +9,22 @@
 #include "Math/Vector.h"
 #include "Math/Rotator.h"
 
-namespace
-{
-	class FImpl
-	{
-	public:
-		static void CalcSocketLaunchLocationAndRotation(const FAttachedWeaponSocket& InSocket, FVector& OutLaunchLocation, FRotator& OutLaunchRotation)
-		{
-			M_TO_BE_IMPL(TEXT("CalcSocketLaunchLocationAndRotation"));
-		}
-	};
-} // anonymous
-
 UQuickWeaponComponent::UQuickWeaponComponent()
 {
 }
 
-void UQuickWeaponComponent::Fire_Implementation(int32 InWeaponIndex)
+void UQuickWeaponComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	Weapons.Reset();
+	for(const TPair<FName, FQuickWeaponConfig>& NameConfig : Config.Weapons)
+	{
+		Weapons.Add(NameConfig.Key, UQuickWeaponTypesLib::CreateWeaponState(this, NameConfig.Key, NameConfig.Value));
+	}
+}
+
+void UQuickWeaponComponent::Fire_Implementation(int32 const InWeaponIndex)
 {
 	M_LOGFUNC_MSG(TEXT("Fire: WeaponIndex = %d"), InWeaponIndex);
 	if(InWeaponIndex >= Config.UsedWeaponNames.Num() || InWeaponIndex < 0)
@@ -36,31 +35,44 @@ void UQuickWeaponComponent::Fire_Implementation(int32 InWeaponIndex)
 	FName const WeaponSocketName = Config.UsedWeaponNames[InWeaponIndex];
 	M_LOG(TEXT("WeaponSocketName: %s"), *WeaponSocketName.ToString());
 
-	const FQuickWeaponConfig& WeaponConfig = Config.GetWeaponBySocketName(WeaponSocketName);
+	FQuickWeaponState* Weapon = GetWeaponBySocketName(WeaponSocketName);
 	const FAttachedWeaponSocket& AttachedSocket = WeaponSockets[WeaponSocketName];
 
-	if(CanFireWeapon(WeaponConfig))
+	if(CanFireWeapon(*Weapon))
 	{
-		FireWeaponFromSocket(WeaponConfig, AttachedSocket);
+		FireWeaponFromSocket(*Weapon, AttachedSocket);
+		Weapon->LastShootTime = GetWorld()->GetTimeSeconds();
 	}
 }
 
-bool UQuickWeaponComponent::CanFireWeapon(const FQuickWeaponConfig& InWeapon) const
+const FQuickWeaponState* UQuickWeaponComponent::GetWeaponBySocketName(FName const InSocketName) const
 {
-	M_TO_BE_IMPL(TEXT("CanFireWeapon")); return true;
+	FName const WeaponName = Config.SocketWeaponNames[InSocketName];
+	return &Weapons[WeaponName];
 }
 
-void UQuickWeaponComponent::FireWeaponFromSocket(const FQuickWeaponConfig& InWeapon, const FAttachedWeaponSocket& InSocket)
+FQuickWeaponState* UQuickWeaponComponent::GetWeaponBySocketName(FName const InSocketName)
 {
-	FVector LaunchLocation;
-	FRotator LaunchRotator;
-	FImpl::CalcSocketLaunchLocationAndRotation(InSocket, LaunchLocation, LaunchRotator);
+	FName const WeaponName = Config.SocketWeaponNames[InSocketName];
+	return &Weapons[WeaponName];
+}
 
+bool UQuickWeaponComponent::CanFireWeapon(const FQuickWeaponState& InWeapon) const
+{
+	if(InWeapon.LastShootTime + InWeapon.Config.MinFireInterval > GetWorld()->GetTimeSeconds())
+	{
+		return false;
+	}
+	return true;
+}
+
+void UQuickWeaponComponent::FireWeaponFromSocket(const FQuickWeaponState& InWeapon, const FAttachedWeaponSocket& InSocket)
+{
 	FActorSpawnParameters SpawnParams;
-	FTransform ProjectileTransform {LaunchRotator, LaunchLocation, FVector::OneVector};
+	FTransform ProjectileTransform {InSocket.GetLaunchRotator(), InSocket.GetLaunchLocation()};
 	AMyProjectileBase* const Projectile = Cast<AMyProjectileBase>(GetWorld()->SpawnActor
 	(
-		InWeapon.ProjectileClass, 
+		InWeapon.Config.ProjectileClass, 
 		&ProjectileTransform,
 		SpawnParams
 	)); 
@@ -71,15 +83,26 @@ void UQuickWeaponComponent::FireWeaponFromSocket(const FQuickWeaponConfig& InWea
 		return;
 	}
 
-	M_TO_BE_IMPL(TEXT("Initialize projectile!"));
+	Projectile->Launch();
+}
+
+void UQuickWeaponComponent::DetachFromMesh()
+{
+	WeaponSockets.Reset();
 }
 
 void UQuickWeaponComponent::AttachSocketToMesh(FName InWeaponSocketName, UStaticMeshComponent* Mesh)
 {
-	M_NOT_IMPL();
+	checkf(Mesh, TEXT("Passed Mesh pointer must be valid"));
+	const FWeaponSocketConfig& SocketConfig = Config.Sockets[InWeaponSocketName];
+	FAttachedWeaponSocket const AttachedSocket = UQuickWeaponTypesLib::CreateAttachedSocketByName(Mesh, InWeaponSocketName, SocketConfig);
+	WeaponSockets.Add(InWeaponSocketName, AttachedSocket);
 }
 
 void UQuickWeaponComponent::AttachSocketToSkeletalMesh(FName InWeaponSocketName, USkeletalMeshComponent* Mesh)
 {
-	M_NOT_IMPL();
+	checkf(Mesh, TEXT("Passed Mesh pointer must be valid"));
+	const FWeaponSocketConfig& SocketConfig = Config.Sockets[InWeaponSocketName];
+	FAttachedWeaponSocket const AttachedSocket = UQuickWeaponTypesLib::CreateAttachedSkeletalSocketByName(Mesh, InWeaponSocketName, SocketConfig);
+	WeaponSockets.Add(InWeaponSocketName, AttachedSocket);
 }

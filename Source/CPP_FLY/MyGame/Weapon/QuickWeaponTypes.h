@@ -33,20 +33,23 @@ struct FWeaponSocketConfig
 
 	/** SocketOffset*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector SocketOffset;
+	FVector SocketOffset = FVector::ZeroVector;
 	
 	/** SocketRotation*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FRotator SocketRotation;
+	FRotator SocketRotation = FRotator::ZeroRotator;
 };
 
 class UStaticMeshSocket;
 class USkeletalMeshSocket;
+class UMeshComponent;
 
 /** ESocketType*/
 UENUM(BlueprintType, Category=Misc)
 enum class EWeaponSocketType : uint8
 {
+	None UMETA(DisplayName="None"),
+
 	/** StaticMesh*/
 	StaticMesh UMETA(DisplayName="StaticMesh")
 
@@ -71,31 +74,107 @@ struct FAttachedWeaponSocket
 	/**
 	* Creates static mesh socket;
 	*/
-	FAttachedWeaponSocket(const FWeaponSocketConfig& InSocketConfig, UStaticMeshSocket* InSocket);
+	FAttachedWeaponSocket(const FWeaponSocketConfig& InSocketConfig, const UStaticMeshSocket* InSocket, UMeshComponent* InMeshComponent);
 
 	/**
 	* Creates skeletal mesh socket;
 	*/
-	FAttachedWeaponSocket(const FWeaponSocketConfig& InSocketConfig, USkeletalMeshSocket* InSocket);
+	FAttachedWeaponSocket(const FWeaponSocketConfig& InSocketConfig, const USkeletalMeshSocket* InSocket, UMeshComponent* InMeshComponent);
 
+	FName GetWeaponName() const { return WeaponName; }
 	const FWeaponSocketConfig& GetSocketConfig() const { return SocketConfig; }
 	EWeaponSocketType GetSocketType() const { return SocketType; }
-	UStaticMeshSocket* GetStaticMeshSocket() const { return StaticMeshSocket; }
-	USkeletalMeshSocket* GetSkeletalMeshSocket() const { return SkeletalMeshSocket; }
+	UMeshComponent* GetMeshComponent() const { return MeshComponent; }
+	const UStaticMeshSocket* GetStaticMeshSocket() const { return StaticMeshSocket; }
+	const USkeletalMeshSocket* GetSkeletalMeshSocket() const { return SkeletalMeshSocket; }
+
+	/**
+	* Final rotation of the socket transform, affected by offset and rotation.
+	* In World Space.
+	* Must be updated from socket!
+	*
+	* @see: UpdateFromSocket
+	*/
+	const FRotator& GetLaunchRotator() const;
+
+	/**
+	* Final location of the socket transform, affected by offset and rotation.
+	* In World Space.
+	* Must be updated from socket!
+	*
+	* @see: UpdateFromSocket
+	*/
+	const FVector& GetLaunchLocation() const;
+
+	/**
+	* Base transform of the socket.
+	* In World Space.
+	* Must be updated from socket!
+	*
+	* @see: UpdateFromSocket
+	*/
+	const FTransform& GetBaseSocketTransform() const;
+
+	/**
+	* This function to be called each time before calling GetLaunchRotator()/GetLaunchLocation()/GetBaseSocketTransform()
+	*/
+	void UpdateFromSocket();
 
 private:
+	void UpdateBaseSocketTransform();
+
+	UPROPERTY()
+	FName WeaponName;
+
 	UPROPERTY()
 	FWeaponSocketConfig SocketConfig;
 
-	UPROPERTY(EditAnywhere)
-	EWeaponSocketType SocketType;
+	UPROPERTY()
+	EWeaponSocketType SocketType = EWeaponSocketType::None;
+
+	UPROPERTY()
+	mutable FVector LaunchLocation = FVector::ZeroVector;
+
+	UPROPERTY()
+	mutable FRotator LaunchRotator = FRotator::ZeroRotator;
+
+	UPROPERTY()
+	mutable FTransform BaseSocketTransform;
 
 	/** The static mesh socket we are attached to*/
-	UPROPERTY(EditAnywhere)
-	UStaticMeshSocket* StaticMeshSocket = nullptr;
+	UPROPERTY()
+	const UStaticMeshSocket* StaticMeshSocket = nullptr;
 
-	UPROPERTY(EditAnywhere)
-	USkeletalMeshSocket* SkeletalMeshSocket = nullptr;
+	UPROPERTY()
+	const USkeletalMeshSocket* SkeletalMeshSocket = nullptr;
+
+	UPROPERTY()
+	UMeshComponent* MeshComponent = nullptr;
+};
+
+USTRUCT(BlueprintType, Category = Weapon)
+struct FQuickWeaponState
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName WeaponName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FQuickWeaponConfig Config;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float LastShootTime = 0.0F;
+
+	/**
+	* Default ctor: Creates uninitialized weapon state
+	*/
+	FQuickWeaponState();
+
+	/**
+	* Default ctor: Creates uninitialized weapon state
+	*/
+	FQuickWeaponState(FName InWeaponName, const FQuickWeaponConfig& InConfig);
 };
 
 /*
@@ -125,7 +204,6 @@ struct FQuickWeaponInventoryConfig
 
 	void RegisterSocket(FName InUniqueName, const FWeaponSocketConfig& InConfig);
 	void RegisterWeapon(FName InUniqueName, const FQuickWeaponConfig& InConfig);
-	const FQuickWeaponConfig& GetWeaponBySocketName(FName InSocket) const;
 	void SetWeaponToSocketChecked(const FWeaponSocketConfig& InSocket, const FQuickWeaponConfig& InWeapon);
 	void SetWeaponToSocketChecked(FName InSocketName, FName InWeaponName);
 	const FQuickWeaponConfig& GetWeaponByIndex(int32 InIndex) const;

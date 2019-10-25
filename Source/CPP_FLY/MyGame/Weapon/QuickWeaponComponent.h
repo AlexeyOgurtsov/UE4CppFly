@@ -16,8 +16,13 @@ class UQuickWeaponComponent :
 	
 public:
 	UQuickWeaponComponent();
+
+	virtual void BeginPlay() override;
 	
 	// ~ Mesh attachment Begin
+	UFUNCTION(BlueprintCallable, Category = MeshAttachment)
+	void DetachFromMesh();
+
 	UFUNCTION(BlueprintCallable, Category = MeshAttachment)
 	void AttachSocketToMesh(FName InWeaponSocketName, UStaticMeshComponent* Mesh);
 
@@ -31,13 +36,19 @@ public:
 
 protected:
 private:
-	void FireWeaponFromSocket(const FQuickWeaponConfig& InWeapon, const FAttachedWeaponSocket& InSocket);
-	bool CanFireWeapon(const FQuickWeaponConfig& InWeapon) const;
+	FQuickWeaponState* GetWeaponBySocketName(FName InSocketName);
+	const FQuickWeaponState* GetWeaponBySocketName(FName InSocketName) const;
+
+	void FireWeaponFromSocket(const FQuickWeaponState& InWeapon, const FAttachedWeaponSocket& InSocket);
+	bool CanFireWeapon(const FQuickWeaponState& InWeapon) const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon, Meta=(AllowPrivateAccess = true))
 	FQuickWeaponInventoryConfig Config;
 
 	UPROPERTY()
 	TMap<FName, FAttachedWeaponSocket> WeaponSockets;
+
+	UPROPERTY()
+	TMap<FName, FQuickWeaponState> Weapons;
 };
 

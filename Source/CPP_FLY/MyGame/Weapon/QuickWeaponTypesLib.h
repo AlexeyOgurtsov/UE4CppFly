@@ -4,8 +4,8 @@
 #include "QuickWeaponTypes.h"
 #include "QuickWeaponTypesLib.generated.h"
 
-class UStaticMesh;
-class USkeletalMesh;
+class UStaticMeshComponent;
+class USkeletalMeshComponent;
 
 UCLASS()
 class UQuickWeaponTypesLib : public UBlueprintFunctionLibrary
@@ -14,8 +14,11 @@ class UQuickWeaponTypesLib : public UBlueprintFunctionLibrary
 
 public:
 	UFUNCTION(BlueprintCallable, Category = Weapon)
-	static FAttachedWeaponSocket CreateAttachedSocketByName(UStaticMesh* Mesh, FName SocketName);
+	static FAttachedWeaponSocket CreateAttachedSocketByName(UStaticMeshComponent* Mesh, FName SocketName, const FWeaponSocketConfig& InConfig);
 
 	UFUNCTION(BlueprintCallable, Category = Weapon)
-	static FAttachedWeaponSocket CreateAttachedSkeletalSocketByName(USkeletalMesh* Mesh, FName SocketName);
+	static FAttachedWeaponSocket CreateAttachedSkeletalSocketByName(USkeletalMeshComponent* Mesh, FName SocketName, const FWeaponSocketConfig& InConfig);
+
+	UFUNCTION(BlueprintCallable, Category = Weapon, Meta=(WorldContext = WorldContextObject))
+	static FQuickWeaponState CreateWeaponState(UObject* WorldContextObject, FName InName, const FQuickWeaponConfig& InConfig);
 };
