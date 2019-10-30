@@ -39,7 +39,7 @@ void UQuickWeaponComponent::ReAttachToSockets()
 	UStaticMeshComponent* FirstStaticMesh = GetOwner()->FindComponentByClass<UStaticMeshComponent>();
 	USkeletalMeshComponent* FirstSkeletalMesh = GetOwner()->FindComponentByClass<USkeletalMeshComponent>();
 
-	// Remove old sockets that are were added automatically!
+	// Remove old sockets that were added automatically!
 	for(TMap<FName, FAttachedWeaponSocket>::TIterator SockIt = WeaponSockets.CreateIterator(); SockIt; ++SockIt)
 	{
 		if(SockIt->Value.GetAttachMode() == EWeaponSocketAttachMode::Automatic)
@@ -53,7 +53,7 @@ void UQuickWeaponComponent::ReAttachToSockets()
 		UObject* SubobjectWithComponentName = nullptr;
 		if(SocketRef.IsBindedToComponent())
 		{
-			SubobjectWithComponentName = GetOwner()->GetDefaultSubobjectByName(SocketRef.SocketName);
+			SubobjectWithComponentName = GetOwner()->GetDefaultSubobjectByName(SocketRef.ComponentName);
 			if(SubobjectWithComponentName == nullptr)
 			{
 				M_LOG(TEXT("Component with name \"%s\" is not found"), *SocketRef.ComponentName.ToString());

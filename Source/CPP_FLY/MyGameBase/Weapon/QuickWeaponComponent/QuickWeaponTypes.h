@@ -175,10 +175,10 @@ struct FWeaponComponentSocketRef
 	GENERATED_BODY()
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName ComponentName;
+	FName SocketName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName SocketName;
+	FName ComponentName;
 
 	bool IsBindedToComponent() const { return ! ComponentName.IsNone(); }
 
@@ -187,16 +187,16 @@ struct FWeaponComponentSocketRef
 	*/
 	FWeaponComponentSocketRef() {}
 
-	FWeaponComponentSocketRef(FName InComponentName, FName InSocketName)
-	: ComponentName(InComponentName)
-	, SocketName(InSocketName) {}
+	FWeaponComponentSocketRef(FName InSocketName, FName InComponentName)
+	: SocketName(InSocketName)
+	, ComponentName(InComponentName) {}
 
 	/**
 	* Constructs reference that is binded to the socket of the given name on the first component.
 	*/
 	FWeaponComponentSocketRef(FName InSocketName)
-	: ComponentName(NAME_None)
-	, SocketName(InSocketName) {}
+	: SocketName(InSocketName) 
+	, ComponentName(NAME_None) {}
 };
 
 USTRUCT(BlueprintType, Category = Weapon)
