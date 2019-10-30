@@ -1,4 +1,5 @@
 #include "QuickWeaponTypesLib.h"
+#include "QuickWeaponComponent.h"
 #include "Util/Core/LogUtilLib.h"
 
 #include "Components/StaticMeshComponent.h"
@@ -10,22 +11,33 @@
 #include "Math/Vector.h"
 #include "Math/Rotator.h"
 
-FAttachedWeaponSocket UQuickWeaponTypesLib::CreateAttachedSocketByName(UStaticMeshComponent* Mesh, FName SocketName, const FWeaponSocketConfig& InConfig)
+void UQuickWeaponTypesLib::AddSocketWithWeapon(UQuickWeaponComponent* WeaponComponent, FName InWeaponName, const FQuickWeaponConfig& InWeapon, const FWeaponSocketConfig& InSocket, FName InComponentName)
+{
+	//checkf(WeaponComponent, TEXT("Passed weapon component must be valid NON-null pointer"));
+
+	WeaponComponent->Config.Sockets.Add(InWeaponName, InSocket);
+	WeaponComponent->Config.Weapons.Add(InWeaponName, InWeapon);
+	WeaponComponent->Config.UsedWeaponNames.Add(InWeaponName);
+	WeaponComponent->Config.SocketWeaponNames.Add(InWeaponName, InWeaponName);
+	WeaponComponent->SocketsToAttach.Add(FWeaponComponentSocketRef{InSocket.SocketName, InComponentName});
+}
+
+FAttachedWeaponSocket UQuickWeaponTypesLib::CreateAttachedSocketByName(EWeaponSocketAttachMode InAttachMode, UStaticMeshComponent* Mesh, FName SocketName, const FWeaponSocketConfig& InConfig)
 {
 	checkf(Mesh, TEXT("Mesh must be valid"));
 	const UStaticMeshSocket* Socket = Mesh->GetSocketByName(SocketName);
 	checkf(Socket, TEXT("Socket \"%SocketName\" must exist"), *SocketName.ToString());
-	FAttachedWeaponSocket AttachedSocket{InConfig, Socket, Mesh};
+	FAttachedWeaponSocket AttachedSocket{InAttachMode, InConfig, Socket, Mesh};
 	AttachedSocket.UpdateFromSocket();
 	return AttachedSocket;
 }
 
-FAttachedWeaponSocket UQuickWeaponTypesLib::CreateAttachedSkeletalSocketByName(USkeletalMeshComponent* Mesh, FName SocketName, const FWeaponSocketConfig& InConfig)
+FAttachedWeaponSocket UQuickWeaponTypesLib::CreateAttachedSkeletalSocketByName(EWeaponSocketAttachMode InAttachMode, USkeletalMeshComponent* Mesh, FName SocketName, const FWeaponSocketConfig& InConfig)
 {
 	checkf(Mesh, TEXT("Mesh must be valid"));
 	const USkeletalMeshSocket* Socket = Mesh->GetSocketByName(SocketName);
 	checkf(Socket, TEXT("Socket \"%SocketName\" must exist"), *SocketName.ToString());
-	FAttachedWeaponSocket AttachedSocket{InConfig, Socket, Mesh};
+	FAttachedWeaponSocket AttachedSocket{InAttachMode, InConfig, Socket, Mesh};
 	AttachedSocket.UpdateFromSocket();
 	return AttachedSocket;
 }
@@ -86,8 +98,9 @@ FAttachedWeaponSocket::FAttachedWeaponSocket()
 {
 }
 
-FAttachedWeaponSocket::FAttachedWeaponSocket(const FWeaponSocketConfig& InSocketConfig, const UStaticMeshSocket* InSocket, UMeshComponent* InMeshComponent)
-: SocketConfig {InSocketConfig}
+FAttachedWeaponSocket::FAttachedWeaponSocket(EWeaponSocketAttachMode InAttachMode, const FWeaponSocketConfig& InSocketConfig, const UStaticMeshSocket* InSocket, UMeshComponent* InMeshComponent)
+: AttachMode {InAttachMode}
+, SocketConfig {InSocketConfig}
 , SocketType {EWeaponSocketType::StaticMesh}
 , StaticMeshSocket {InSocket}
 , MeshComponent {InMeshComponent}
@@ -96,8 +109,9 @@ FAttachedWeaponSocket::FAttachedWeaponSocket(const FWeaponSocketConfig& InSocket
 	checkf(InMeshComponent, TEXT("Passed mesh component must be valid NON-null pointer"));
 }
 
-FAttachedWeaponSocket::FAttachedWeaponSocket(const FWeaponSocketConfig& InSocketConfig, const USkeletalMeshSocket* InSocket, UMeshComponent* InMeshComponent)
-: SocketConfig {InSocketConfig}
+FAttachedWeaponSocket::FAttachedWeaponSocket(EWeaponSocketAttachMode InAttachMode, const FWeaponSocketConfig& InSocketConfig, const USkeletalMeshSocket* InSocket, UMeshComponent* InMeshComponent)
+: AttachMode {InAttachMode}
+, SocketConfig {InSocketConfig}
 , SocketType {EWeaponSocketType::SkeletalMesh}
 , SkeletalMeshSocket {InSocket}
 , MeshComponent {InMeshComponent}

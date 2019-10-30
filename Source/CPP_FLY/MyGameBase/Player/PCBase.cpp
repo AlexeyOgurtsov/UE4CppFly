@@ -271,7 +271,7 @@ TScriptInterface<IWeaponInventory> APCBase::GetPawnWeapons() const
 	TScriptInterface<IWeaponInventoryHolder> PawnWeaponHolder(GetPawn());
 	if(PawnWeaponHolder.GetInterface())
 	{
-		return PawnWeaponHolder->GetWeapons();
+		return IWeaponInventoryHolder::Execute_GetWeapons(PawnWeaponHolder.GetObject());
 	}
 	return nullptr;
 }

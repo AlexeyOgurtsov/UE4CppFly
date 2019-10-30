@@ -57,6 +57,17 @@ enum class EWeaponSocketType : uint8
 	, SkeletalMesh UMETA(DisplayName="SkeletalMesh")
 };
 
+/** EWeaponSocketAttachMode*/
+UENUM(BlueprintType, Category=Misc)
+enum class EWeaponSocketAttachMode : uint8
+{
+	/** Manual*/
+	Manual UMETA(DisplayName="Manual")
+
+	/** Automatic*/
+	, Automatic UMETA(DisplayName="Automatic")
+};
+
 /**
 * Weapon socket info dependent on the attached actor
 * (should be updated when the mesh or actor is changed!)
@@ -74,14 +85,15 @@ struct FAttachedWeaponSocket
 	/**
 	* Creates static mesh socket;
 	*/
-	FAttachedWeaponSocket(const FWeaponSocketConfig& InSocketConfig, const UStaticMeshSocket* InSocket, UMeshComponent* InMeshComponent);
+	FAttachedWeaponSocket(const EWeaponSocketAttachMode InAttachMode, const FWeaponSocketConfig& InSocketConfig, const UStaticMeshSocket* InSocket, UMeshComponent* InMeshComponent);
 
 	/**
 	* Creates skeletal mesh socket;
 	*/
-	FAttachedWeaponSocket(const FWeaponSocketConfig& InSocketConfig, const USkeletalMeshSocket* InSocket, UMeshComponent* InMeshComponent);
+	FAttachedWeaponSocket(const EWeaponSocketAttachMode InAttachMode, const FWeaponSocketConfig& InSocketConfig, const USkeletalMeshSocket* InSocket, UMeshComponent* InMeshComponent);
 
 	FName GetWeaponName() const { return WeaponName; }
+	EWeaponSocketAttachMode GetAttachMode() const { return AttachMode; }
 	const FWeaponSocketConfig& GetSocketConfig() const { return SocketConfig; }
 	EWeaponSocketType GetSocketType() const { return SocketType; }
 	UMeshComponent* GetMeshComponent() const { return MeshComponent; }
@@ -126,6 +138,10 @@ private:
 	UPROPERTY()
 	FName WeaponName;
 
+	/** AttachMode*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta=(AllowPrivateAccess=true))
+	EWeaponSocketAttachMode AttachMode = EWeaponSocketAttachMode::Manual;
+	
 	UPROPERTY()
 	FWeaponSocketConfig SocketConfig;
 
@@ -150,6 +166,37 @@ private:
 
 	UPROPERTY()
 	UMeshComponent* MeshComponent = nullptr;
+};
+
+
+USTRUCT(BlueprintType)
+struct FWeaponComponentSocketRef
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName ComponentName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName SocketName;
+
+	bool IsBindedToComponent() const { return ! ComponentName.IsNone(); }
+
+	/**
+	* Default ctor: Constructs reference that is NOT binded to any socket
+	*/
+	FWeaponComponentSocketRef() {}
+
+	FWeaponComponentSocketRef(FName InComponentName, FName InSocketName)
+	: ComponentName(InComponentName)
+	, SocketName(InSocketName) {}
+
+	/**
+	* Constructs reference that is binded to the socket of the given name on the first component.
+	*/
+	FWeaponComponentSocketRef(FName InSocketName)
+	: ComponentName(NAME_None)
+	, SocketName(InSocketName) {}
 };
 
 USTRUCT(BlueprintType, Category = Weapon)
@@ -189,7 +236,7 @@ struct FQuickWeaponInventoryConfig
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, FWeaponSocketConfig> Sockets;
 
-	/** Weapon sockets keyed by name*/
+	/** Weapons keyed by name*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, FQuickWeaponConfig> Weapons;
 

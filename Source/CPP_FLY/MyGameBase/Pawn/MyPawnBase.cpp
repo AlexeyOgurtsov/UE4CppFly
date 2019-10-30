@@ -2,7 +2,7 @@
 #include "MyEngine/MyEngineHelperLib.h"
 #include "MyGameBase/Controller/I/IMyController.h"
 #include "MyGameBase/Damage/DamageableComponent.h"
-#include "MyGame/Weapon/QuickWeaponComponent.h"
+#include "MyGameBase/Weapon/QuickWeaponComponent/QuickWeaponComponent.h"
 
 #include "Engine/EngineTypes.h"
 #include "GameFramework/DamageType.h"
@@ -195,4 +195,14 @@ void AMyPawnBase::OnDamageableComponent_DamageStateChanged(const FDamageableStat
 TScriptInterface<IWeaponInventory> AMyPawnBase::GetWeapons_Implementation() const
 {
 	return TScriptInterface<IWeaponInventory>(WeaponComponent);
+}
+
+UQuickWeaponComponent* AMyPawnBase::GetQuickWeaponComponent() const
+{
+	return Cast<UQuickWeaponComponent>(WeaponComponent);
+}
+
+UQuickWeaponComponent* AMyPawnBase::GetQuickWeaponComponentChecked() const
+{
+	return CastChecked<UQuickWeaponComponent>(WeaponComponent);
 }

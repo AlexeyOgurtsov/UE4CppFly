@@ -12,6 +12,7 @@
 class IMyController;
 
 class UWeaponComponent;
+class UQuickWeaponComponent;
 class USceneComponent;
 class UPrimitiveComponent;
 class USpringArmComponent;
@@ -41,6 +42,18 @@ public:
 
 	// ~ IWeaponInventoryHolder Begin
 	virtual TScriptInterface<IWeaponInventory> GetWeapons_Implementation() const override;
+
+	/**
+	* Returns QuickWeaponComponent or nullptr (if current weapon component is not UQuickWeaponComponent)
+	*/
+	UFUNCTION(BlueprintPure, Category = Weapon)
+	UQuickWeaponComponent* GetQuickWeaponComponent() const;
+
+	/**
+	* Returns QuickWeaponComponent (fails if current component is not UQuickWeaponComponent)
+	*/
+	UFUNCTION(BlueprintPure, Category = Weapon)
+	UQuickWeaponComponent* GetQuickWeaponComponentChecked() const;
 	// ~ IWeaponInventoryHolder End
 	
 	// ~ IDamageableContainer Begin
