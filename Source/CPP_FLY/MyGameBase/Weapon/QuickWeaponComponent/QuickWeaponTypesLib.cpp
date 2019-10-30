@@ -14,37 +14,12 @@
 void UQuickWeaponTypesLib::AddSocketWithWeapon(UQuickWeaponComponent* WeaponComponent, FName InWeaponName, const FQuickWeaponConfig& InWeapon, const FWeaponSocketConfig& InSocket, FName InComponentName)
 {
 	//checkf(WeaponComponent, TEXT("Passed weapon component must be valid NON-null pointer"));
-
-	WeaponComponent->Config.Sockets.Add(InWeaponName, InSocket);
+	FWeaponComponentConfigRef const ConfigRef {InWeaponName};
+	WeaponComponent->Config.Sockets.Add(ConfigRef.SocketName, InSocket);
 	WeaponComponent->Config.Weapons.Add(InWeaponName, InWeapon);
 	WeaponComponent->Config.UsedWeaponNames.Add(InWeaponName);
-	WeaponComponent->Config.SocketWeaponNames.Add(InWeaponName, InWeaponName);
-	WeaponComponent->SocketsToAttach.Add(FWeaponComponentSocketRef{InSocket.SocketName, InComponentName});
-}
-
-FAttachedWeaponSocket UQuickWeaponTypesLib::CreateAttachedSocketByName(EWeaponSocketAttachMode InAttachMode, UStaticMeshComponent* Mesh, FName SocketName, const FWeaponSocketConfig& InConfig)
-{
-	checkf(Mesh, TEXT("Mesh must be valid"));
-	const UStaticMeshSocket* Socket = Mesh->GetSocketByName(SocketName);
-	checkf(Socket, TEXT("Socket \"%SocketName\" must exist"), *SocketName.ToString());
-	FAttachedWeaponSocket AttachedSocket{InAttachMode, InConfig, Socket, Mesh};
-	AttachedSocket.UpdateFromSocket();
-	return AttachedSocket;
-}
-
-FAttachedWeaponSocket UQuickWeaponTypesLib::CreateAttachedSkeletalSocketByName(EWeaponSocketAttachMode InAttachMode, USkeletalMeshComponent* Mesh, FName SocketName, const FWeaponSocketConfig& InConfig)
-{
-	checkf(Mesh, TEXT("Mesh must be valid"));
-	const USkeletalMeshSocket* Socket = Mesh->GetSocketByName(SocketName);
-	checkf(Socket, TEXT("Socket \"%SocketName\" must exist"), *SocketName.ToString());
-	FAttachedWeaponSocket AttachedSocket{InAttachMode, InConfig, Socket, Mesh};
-	AttachedSocket.UpdateFromSocket();
-	return AttachedSocket;
-}
-
-FQuickWeaponState UQuickWeaponTypesLib::CreateWeaponState(UObject* WorldContextObject, FName InName, const FQuickWeaponConfig& InConfig)
-{
-	return FQuickWeaponState(InName, InConfig);
+	WeaponComponent->Config.WeaponSocketNames.Add(InWeaponName, ConfigRef.SocketName);
+	WeaponComponent->SocketsToAttach.Add(FWeaponComponentSocketRef{ConfigRef, InSocket.SocketName, InComponentName});
 }
 
 void FAttachedWeaponSocket::UpdateFromSocket()

@@ -15,15 +15,6 @@ class UQuickWeaponTypesLib : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, Category = Weapon)
-	static FAttachedWeaponSocket CreateAttachedSocketByName(EWeaponSocketAttachMode InAttachMode, UStaticMeshComponent* Mesh, FName SocketName, const FWeaponSocketConfig& InConfig);
-
-	UFUNCTION(BlueprintCallable, Category = Weapon)
-	static FAttachedWeaponSocket CreateAttachedSkeletalSocketByName(EWeaponSocketAttachMode InAttachMode, USkeletalMeshComponent* Mesh, FName SocketName, const FWeaponSocketConfig& InConfig);
-
-	UFUNCTION(BlueprintCallable, Category = Weapon, Meta=(WorldContext = WorldContextObject))
-	static FQuickWeaponState CreateWeaponState(UObject* WorldContextObject, FName InName, const FQuickWeaponConfig& InConfig);
-
 	/**
 	* If NAME_None is used for the component name, then the first component will be used.
 	*

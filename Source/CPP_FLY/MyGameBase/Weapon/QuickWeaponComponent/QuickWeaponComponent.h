@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MyGameBase/Weapon/WeaponComponent.h"
-#include "QuickWeaponTypes.h"
+#include "QuickWeaponInternalTypes.h"
 #include "QuickWeaponComponent.generated.h"
 
 
@@ -65,12 +65,28 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon)
 	TArray<FWeaponComponentSocketRef> SocketsToAttach;
 
+	/**
+	* Configuration of the weapon inventory.
+	*
+	* @warning: UpdateFromWeaponConfig must be called after the weapon config is updated to affect changes!
+	* (However, it should not be called if config is defined declaratively, 
+	* because the config is automatically updated inside the PostInitProperties)
+	*
+	* @see UpdateFromWeaponConfig
+	*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon)
 	FQuickWeaponInventoryConfig Config;
 
 	/**
+	* Updates internal state of the weapon from the config
+	*/
+	UFUNCTION(BlueprintCallable, Category = Weapon)
+	void UpdateFromWeaponConfig();
+
+	/**
 	* Reattach to sockets:
 	* Attaches sockets enlisted within the SocketsToAttach.
+	* Automatically updates from weapon config.
 	*
 	* It does NOT clear sockets added manually!
 	* 
@@ -90,15 +106,17 @@ public:
 
 protected:
 private:
-	FQuickWeaponState* GetWeaponBySocketName(FName InSocketName);
-	const FQuickWeaponState* GetWeaponBySocketName(FName InSocketName) const;
+	TOptional<FName> GetSocketNameByWeaponName(FName InWeaponName) const;
+	FAttachedWeaponSocket* GetAttachedWeaponSocketByWeaponName(FName InSocketName);
+	FQuickWeaponState* GetWeaponByName(FName InSocketName);
+	FWeaponSocketConfig* GetSocketByName(FName InSocketName);
 
-	void FireWeaponFromSocket(const FQuickWeaponState& InWeapon, const FAttachedWeaponSocket& InSocket);
+	bool FireWeaponFromSocket(const FQuickWeaponState& InWeapon, const FAttachedWeaponSocket& InSocket);
 	bool CanFireWeapon(const FQuickWeaponState& InWeapon) const;
 
-	void AttachSocketToSkeletalMeshImpl(EWeaponSocketAttachMode InAttachMode, FName InWeaponSocketName, USkeletalMeshComponent* Mesh);
-	void AttachSocketToStaticMeshImpl(EWeaponSocketAttachMode InAttachMode, FName InWeaponSocketName, UStaticMeshComponent* Mesh);
-	void AttachSocketToComponentImpl(EWeaponSocketAttachMode InAttachMode, FName InWeaponSocketName, UActorComponent* Component);
+	FAttachedWeaponSocket* AttachSocketToSkeletalMeshImpl(EWeaponSocketAttachMode InAttachMode, FName InWeaponSocketName, USkeletalMeshComponent* Mesh);
+	FAttachedWeaponSocket* AttachSocketToStaticMeshImpl(EWeaponSocketAttachMode InAttachMode, FName InWeaponSocketName, UStaticMeshComponent* Mesh);
+	FAttachedWeaponSocket* AttachSocketToComponentImpl(EWeaponSocketAttachMode InAttachMode, FName InWeaponSocketName, UActorComponent* Component);
 
 	UPROPERTY()
 	TMap<FName, FAttachedWeaponSocket> WeaponSockets;

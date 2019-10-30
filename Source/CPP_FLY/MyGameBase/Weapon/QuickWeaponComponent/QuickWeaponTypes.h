@@ -68,104 +68,20 @@ enum class EWeaponSocketAttachMode : uint8
 	, Automatic UMETA(DisplayName="Automatic")
 };
 
-/**
-* Weapon socket info dependent on the attached actor
-* (should be updated when the mesh or actor is changed!)
-*/
-USTRUCT(BlueprintType, Category = Weapon)
-struct FAttachedWeaponSocket
+USTRUCT(BlueprintType)
+struct FWeaponComponentConfigRef
 {
 	GENERATED_BODY()
 
 	/**
-	* Default Ctor: Creates UNINITIALIZED socket;
+	* Name of the socket 
 	*/
-	FAttachedWeaponSocket();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName SocketName;
 
-	/**
-	* Creates static mesh socket;
-	*/
-	FAttachedWeaponSocket(const EWeaponSocketAttachMode InAttachMode, const FWeaponSocketConfig& InSocketConfig, const UStaticMeshSocket* InSocket, UMeshComponent* InMeshComponent);
-
-	/**
-	* Creates skeletal mesh socket;
-	*/
-	FAttachedWeaponSocket(const EWeaponSocketAttachMode InAttachMode, const FWeaponSocketConfig& InSocketConfig, const USkeletalMeshSocket* InSocket, UMeshComponent* InMeshComponent);
-
-	FName GetWeaponName() const { return WeaponName; }
-	EWeaponSocketAttachMode GetAttachMode() const { return AttachMode; }
-	const FWeaponSocketConfig& GetSocketConfig() const { return SocketConfig; }
-	EWeaponSocketType GetSocketType() const { return SocketType; }
-	UMeshComponent* GetMeshComponent() const { return MeshComponent; }
-	const UStaticMeshSocket* GetStaticMeshSocket() const { return StaticMeshSocket; }
-	const USkeletalMeshSocket* GetSkeletalMeshSocket() const { return SkeletalMeshSocket; }
-
-	/**
-	* Final rotation of the socket transform, affected by offset and rotation.
-	* In World Space.
-	* Must be updated from socket!
-	*
-	* @see: UpdateFromSocket
-	*/
-	const FRotator& GetLaunchRotator() const;
-
-	/**
-	* Final location of the socket transform, affected by offset and rotation.
-	* In World Space.
-	* Must be updated from socket!
-	*
-	* @see: UpdateFromSocket
-	*/
-	const FVector& GetLaunchLocation() const;
-
-	/**
-	* Base transform of the socket.
-	* In World Space.
-	* Must be updated from socket!
-	*
-	* @see: UpdateFromSocket
-	*/
-	const FTransform& GetBaseSocketTransform() const;
-
-	/**
-	* This function to be called each time before calling GetLaunchRotator()/GetLaunchLocation()/GetBaseSocketTransform()
-	*/
-	void UpdateFromSocket();
-
-private:
-	void UpdateBaseSocketTransform();
-
-	UPROPERTY()
-	FName WeaponName;
-
-	/** AttachMode*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta=(AllowPrivateAccess=true))
-	EWeaponSocketAttachMode AttachMode = EWeaponSocketAttachMode::Manual;
-	
-	UPROPERTY()
-	FWeaponSocketConfig SocketConfig;
-
-	UPROPERTY()
-	EWeaponSocketType SocketType = EWeaponSocketType::None;
-
-	UPROPERTY()
-	mutable FVector LaunchLocation = FVector::ZeroVector;
-
-	UPROPERTY()
-	mutable FRotator LaunchRotator = FRotator::ZeroRotator;
-
-	UPROPERTY()
-	mutable FTransform BaseSocketTransform;
-
-	/** The static mesh socket we are attached to*/
-	UPROPERTY()
-	const UStaticMeshSocket* StaticMeshSocket = nullptr;
-
-	UPROPERTY()
-	const USkeletalMeshSocket* SkeletalMeshSocket = nullptr;
-
-	UPROPERTY()
-	UMeshComponent* MeshComponent = nullptr;
+	FWeaponComponentConfigRef() {}
+	FWeaponComponentConfigRef(FName InSocketName)
+	: SocketName(InSocketName) {}
 };
 
 
@@ -174,9 +90,21 @@ struct FWeaponComponentSocketRef
 {
 	GENERATED_BODY()
 	
+	/**
+	* Links to config (which weapon and socket config should we use?)
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FWeaponComponentConfigRef ConfigRef;
+
+	/**
+	* Name of the socket on the component
+	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName SocketName;
 
+	/**
+	* Name of the component (of None if linked with First component, not with particular component)
+	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName ComponentName;
 
@@ -187,41 +115,18 @@ struct FWeaponComponentSocketRef
 	*/
 	FWeaponComponentSocketRef() {}
 
-	FWeaponComponentSocketRef(FName InSocketName, FName InComponentName)
-	: SocketName(InSocketName)
+	FWeaponComponentSocketRef(const FWeaponComponentConfigRef& InConfigRef, FName InSocketName, FName InComponentName)
+	: ConfigRef(InConfigRef)
+	, SocketName(InSocketName)
 	, ComponentName(InComponentName) {}
 
 	/**
 	* Constructs reference that is binded to the socket of the given name on the first component.
 	*/
-	FWeaponComponentSocketRef(FName InSocketName)
-	: SocketName(InSocketName) 
+	FWeaponComponentSocketRef(const FWeaponComponentConfigRef& InConfigRef, FName InSocketName)
+	: ConfigRef(InConfigRef)
+	, SocketName(InSocketName) 
 	, ComponentName(NAME_None) {}
-};
-
-USTRUCT(BlueprintType, Category = Weapon)
-struct FQuickWeaponState
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName WeaponName;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FQuickWeaponConfig Config;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float LastShootTime = 0.0F;
-
-	/**
-	* Default ctor: Creates uninitialized weapon state
-	*/
-	FQuickWeaponState();
-
-	/**
-	* Default ctor: Creates uninitialized weapon state
-	*/
-	FQuickWeaponState(FName InWeaponName, const FQuickWeaponConfig& InConfig);
 };
 
 /*
@@ -240,9 +145,9 @@ struct FQuickWeaponInventoryConfig
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, FQuickWeaponConfig> Weapons;
 
-	/** Maps socket names to weapon names */
+	/** Maps weapon names to socket names */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TMap<FName, FName> SocketWeaponNames;
+	TMap<FName, FName> WeaponSocketNames;
 
 	/**
 	* Mapping of weapons to indices
