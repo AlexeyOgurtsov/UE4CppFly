@@ -1,0 +1,7 @@
+Player camera setup is strange.
+Camera attached to pawn is not rotated with the scene component that it's attached to!
+SOLVED
+
+SOLUTION 1:
+	Make the Collision Sphere the root coomponent.
+	bInheritPitch. for camera

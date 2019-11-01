@@ -1,0 +1,24 @@
+------------------- BUG1: Garbage collection
+
+-06.03.52:330][168]MyLog: InputModeStack: BeginDestroy...
+[2019.03.29-06.03.52:330][168]LogOutputDevice: Warning: 
+
+Script Stack (0 frames):
+
+[2019.03.29-06.07.24:914][168]LogStats: FPlatformStackWalk::StackWalkAndDump - 212.434 s
+[2019.03.29-06.07.27:419][168]LogOutputDevice: Error: === Handled ensure: ===
+[2019.03.29-06.07.27:496][168]LogOutputDevice: Error: 
+[2019.03.29-06.07.27:507][168]LogOutputDevice: Error: Ensure condition failed: !IsGarbageCollecting() [File:D:\Build\++UE4\Sync\Engine\Source\Runtime\UMG\Private\Slate\SObjectWidget.cpp] [Line: 41]
+[2019.03.29-06.07.27:761][168]LogOutputDevice: Error: SObjectWidget for 'W_ProtoMainMenu_C /Engine/Transient.UnrealEdEngine_0:BP_MyGameInstance_C_0.W_ProtoMainMenu_C_0' destroyed while collecting garbage.  This can lead to multiple GCs being required to cleanup the object.  Possible causes might be,
+[2019.03.29-06.07.27:865][168]LogOutputDevice: Error: 1) ReleaseSlateResources not being implemented for the owner of this pointer.
+[2019.03.29-06.07.27:903][168]LogOutputDevice: Error: 2) You may just be holding onto some slate pointers on an actor that don't get reset until the actor is Garbage Collected.  You should avoid doing this, and instead reset those references when the actor is Destroyed.
+[2019.03.29-06.07.27:912][168]LogOutputDevice: Error: Stack: 
+[2019.03.29-06.07.27:949][168]LogOutputDevice: Error: [Callstack] 0x00007ffdf85c9033 UE4Editor-UMG.dll!SObjectWidget::~SObjectWidget() [d:\build\++ue4\sync\engine\source\runtime\umg\private\slate\sobjectwidget.cpp:41]
+[2019.03.29-06.07.28:004][168]LogOutputDevice: Error: [Callstack] 0x00007ffde937850e UE4Editor-Engine.dll!FInputModeUIOnly::~FInputModeUIOnly() []
+[2019.03.29-06.07.28:044][168]LogOutputDevice: Error: [Callstack] 0x00007ffdd5b4dad9 UE4Editor-CPP_FLY.dll!UInputModeStack::BeginDestroy() [c:\unr_code\cpp_fly\source\cpp_fly\util\ui\inputmodestack.cpp:16]
+
+------ Current Solution: "Provide Enable/Disable stack parameter":
+
+
+--- Solution: "Provide Enable/Disable stack parameter"
+1. 

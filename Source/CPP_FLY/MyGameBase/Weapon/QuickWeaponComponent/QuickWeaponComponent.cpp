@@ -17,7 +17,7 @@
 
 namespace
 {
-	class FImpl
+	static class FImpl
 	{
 	public:
 		static TOptional<FAttachedWeaponSocket> CreateAttachedSocketByName(EWeaponSocketAttachMode InAttachMode, UStaticMeshComponent* Mesh, const FWeaponSocketConfig& InConfig);

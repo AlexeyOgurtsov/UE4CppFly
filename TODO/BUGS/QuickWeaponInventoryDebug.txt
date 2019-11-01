@@ -1,0 +1,102 @@
+----- BUG
+Calling AddSocketWithWeapon with weapon name that is ALREADY registered does NOT show any message
+
+--------------------------------------------------------------------------------------------
+----------------------------------------- OLD BUGS
+----- BUG 1:
+Inside the main Player's Blueprint on BeginPlay:
+[2019.10.29-18.25.37:480][443]
+MyLog: UQuickWeaponComponent::ReAttachToSockets: Component with name "Nose" is not found 
+(line: 59 : C:\UNR_CODE\CPP_FLY\Source\CPP_FLY\MyGameBase\Weapon\QuickWeaponComponent\QuickWeaponComponent.cpp )
+
++FIXED
+
+----- BUG 2:
+	BP_MyPlayerPawn_C.InitWeaponComponent
+BP_MyPlayerPawn_C:
+		1. Calls UQuickWeaponTypesLib::AddSocketWithWeapon()
+		2. Calls WeaponComponent->ReAttachToSockets
+
+	[2019.10.30-10.59.59:602][ 47]LogOutputDevice: Warning: 
+
+Script Stack (3 frames):
+BP_MyPlayerPawn_C.InitWeaponComponent
+BP_MyPlayerPawn_C.ExecuteUbergraph_BP_MyPlayerPawn
+BP_MyPlayerPawn_C.ReceiveBeginPlay
+
+[2019.10.30-10.59.59:603][ 47]LogWindows: Windows GetLastError: Операция успешно завершена. (0)
+[2019.10.30-11.00.25:561][ 47]LogWindows: Error: === Critical error: ===
+[2019.10.30-11.00.25:561][ 47]LogWindows: Error: 
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: Assertion failed: Pair != nullptr [File:C:\UNR_CODE\UE_4.23\Engine\Source\Runtime\Core\Public\Containers/Map.h] [Line: 508] 
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: 
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: 
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: 
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff8cfb3a388 KERNELBASE.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff8a7799ef7 UE4Editor-Core.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff8a779c754 UE4Editor-Core.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff8a7591afa UE4Editor-Core.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff8a74e67c3 UE4Editor-Core.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff8a74e6ed0 UE4Editor-Core.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff8829fc4d9 UE4Editor-CPP_FLY.dll!UQuickWeaponComponent::AttachSocketToStaticMeshImpl() [c:\unr_code\cpp_fly\source\cpp_fly\mygamebase\weapon\quickweaponcomponent\quickweaponcomponent.cpp:184]
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff8829fb20e UE4Editor-CPP_FLY.dll!UQuickWeaponComponent::AttachSocketToComponentImpl() [c:\unr_code\cpp_fly\source\cpp_fly\mygamebase\weapon\quickweaponcomponent\quickweaponcomponent.cpp:92]
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff882a01471 UE4Editor-CPP_FLY.dll!UQuickWeaponComponent::ReAttachToSockets() [c:\unr_code\cpp_fly\source\cpp_fly\mygamebase\weapon\quickweaponcomponent\quickweaponcomponent.cpp:51]
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff8a6628378 UE4Editor-CoreUObject.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff8a683d3ce UE4Editor-CoreUObject.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff8a685fc81 UE4Editor-CoreUObject.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff8a6861d22 UE4Editor-CoreUObject.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff8a68314fb UE4Editor-CoreUObject.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff8a6861a33 UE4Editor-CoreUObject.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff8a6861d22 UE4Editor-CoreUObject.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff8a68314fb UE4Editor-CoreUObject.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff8a6861a33 UE4Editor-CoreUObject.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff8a6861d22 UE4Editor-CoreUObject.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff8a6861674 UE4Editor-CoreUObject.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff8a6628378 UE4Editor-CoreUObject.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff8a6861177 UE4Editor-CoreUObject.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff89a0a9d43 UE4Editor-Engine.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff89a073f78 UE4Editor-Engine.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff882a3b3c3 UE4Editor-CPP_FLY.dll!AMyPawnBase::BeginPlay() [c:\unr_code\cpp_fly\source\cpp_fly\mygamebase\pawn\mypawnbase.cpp:79]
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff89a07f9f6 UE4Editor-Engine.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff89b2dcd40 UE4Editor-Engine.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff89a7723b1 UE4Editor-Engine.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff89b28adfe UE4Editor-Engine.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff89a734389 UE4Editor-Engine.dll!UnknownFunction []
+[2019.10.30-11.00.25:562][ 47]LogWindows: Error: [Callstack] 0x00007ff899064953 UE4Editor-UnrealEd.dll!UnknownFunction []
+[2019.10.30-11.00.25:563][ 47]LogWindows: Error: [Callstack] 0x00007ff899083c01 UE4Editor-UnrealEd.dll!UnknownFunction []
+[2019.10.30-11.00.25:563][ 47]LogWindows: Error: [Callstack] 0x00007ff89909daf5 UE4Editor-UnrealEd.dll!UnknownFunction []
+[2019.10.30-11.00.25:563][ 47]LogWindows: Error: [Callstack] 0x00007ff898b5d9b4 UE4Editor-UnrealEd.dll!UnknownFunction []
+[2019.10.30-11.00.25:563][ 47]LogWindows: Error: [Callstack] 0x00007ff8993b4b16 UE4Editor-UnrealEd.dll!UnknownFunction []
+[2019.10.30-11.00.25:563][ 47]LogWindows: Error: [Callstack] 0x00007ff734717b0a UE4Editor.exe!UnknownFunction []
+[2019.10.30-11.00.25:563][ 47]LogWindows: Error: [Callstack] 0x00007ff73472a91c UE4Editor.exe!UnknownFunction []
+[2019.10.30-11.00.25:563][ 47]LogWindows: Error: [Callstack] 0x00007ff73472a9fa UE4Editor.exe!UnknownFunction []
+[2019.10.30-11.00.25:563][ 47]LogWindows: Error: [Callstack] 0x00007ff73473b92c UE4Editor.exe!UnknownFunction []
+[2019.10.30-11.00.25:563][ 47]LogWindows: Error: [Callstack] 0x00007ff73473e60e UE4Editor.exe!UnknownFunction []
+[2019.10.30-11.00.25:563][ 47]LogWindows: Error: [Callstack] 0x00007ff8d2754034 KERNEL32.DLL!UnknownFunction []
+[2019.10.30-11.00.25:563][ 47]LogWindows: Error: [Callstack] 0x00007ff8d30f3691 ntdll.dll!UnknownFunction []
+[2019.10.30-11.00.25:563][ 47]LogWindows: Error: 
+[2019.10.30-11.00.25:584][ 47]LogExit: Executing StaticShutdownAfterError
+[2019.10.30-11.00.26:329][ 47]LogWindows: FPlatformMisc::RequestExit(1)
+[2019.10.30-11.00.26:522][ 47]Log file closed, 10/30/19 16:00:26
+
++FIXED
+
+
+----- BUG 3:
+UQuickWeaponComponent::Fire_Implementation(Int32 const InWeaponIndex):
+FQuickWeaponState* UQuickWeaponComponent::GetWeaponBySocketName(InSocketName):
+	FName const WeaponName = Config.SocketWeaponNames[InSocketName] // FAILS (Pair != nullptr)
+
+[2019.10.29-18.25.39:762][558]MyLog: UQuickWeaponComponent::Fire_Implementation: Fire: WeaponIndex = 0 (line: 106 : C:\UNR_CODE\CPP_FLY\Source\CPP_FLY\MyGameBase\Weapon\QuickWeaponComponent\QuickWeaponComponent.cpp ) : Block entered
+[2019.10.29-18.25.39:762][558]MyLog: UQuickWeaponComponent::Fire_Implementation: WeaponSocketName: MainWeapon (line: 113 : C:\UNR_CODE\CPP_FLY\Source\CPP_FLY\MyGameBase\Weapon\QuickWeaponComponent\QuickWeaponComponent.cpp )
+[2019.10.29-18.25.39:803][558]LogOutputDevice: Warning: 
+
+Script Stack (1 frames):
+WeaponInventory.Fire
+
+[2019.10.29-18.25.39:803][558]LogWindows: Windows GetLastError: Операция успешно завершена. (0)
+[2019.10.29-18.25.55:555][558]LogWindows: Error: === Critical error: ===
+[2019.10.29-18.25.55:555][558]LogWindows: Error: 
+[2019.10.29-18.25.55:555][558]LogWindows: Error: Assertion failed: Pair != nullptr [File:C:\UNR_CODE\UE_4.23\Engine\Source\Runtime\Core\Public\Containers/Map.h] [Line: 508] 
+
++FIXED
+	

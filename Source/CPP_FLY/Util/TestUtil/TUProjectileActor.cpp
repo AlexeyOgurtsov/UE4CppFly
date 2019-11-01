@@ -36,7 +36,7 @@ ATUProjectileActor::ATUProjectileActor()
 {
 	OnActorHit.AddDynamic(this, &ATUProjectileActor::ActorHit);
 
-	InitMesh(RootSceneComponent);
+	InitMesh(nullptr);
 	RootComponent = Mesh;
 	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootSceneComponent"));
 	RootSceneComponent->SetupAttachment(RootComponent);
@@ -50,6 +50,7 @@ ATUProjectileActor::ATUProjectileActor()
 void ATUProjectileActor::BeginPlay()
 {
 	M_LOGFUNC();
+	Super::BeginPlay();
 	SetLifeSpan(ProjectileConfig::Default::MAX_LIFETIME_SECONDS);
 }
 
@@ -95,16 +96,19 @@ void ATUProjectileActor::MakeImpact(AActor* const ActorToDamage, const FHitResul
 	M_LOG_WARN_IF( ! bDestroyed, TEXT("AActor::Destroy() returned false for '%s'"), *ULogUtilLib::GetNameAndClassSafe(this));
 }
 
-void ATUProjectileActor::InitProjectileMovementComponent(USceneComponent* UpdatedComponent)
+void ATUProjectileActor::InitProjectileMovementComponent(USceneComponent* InUpdatedComponent)
 {
-	check(UpdatedComponent);
-	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
-	ProjectileMovementComponent->SetUpdatedComponent(UpdatedComponent);
+	M_LOGFUNC();
+	float const INITIAL_SPEED = ProjectileConfig::Default::SPEED;
 
+	check(InUpdatedComponent);
+
+	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
 	ProjectileMovementComponent->MaxSpeed = ProjectileConfig::Default::MAX_SPEED;
-	ProjectileMovementComponent->InitialSpeed = ProjectileConfig::Default::MAX_SPEED;
-	ProjectileMovementComponent->Velocity = UpdatedComponent->GetComponentQuat().Vector();
+	ProjectileMovementComponent->InitialSpeed = INITIAL_SPEED;
 	ProjectileMovementComponent->ProjectileGravityScale = 0.0F;
+	ProjectileMovementComponent->bInitialVelocityInLocalSpace = true;
+	ProjectileMovementComponent->Velocity = FVector{INITIAL_SPEED, 0.0F, 0.0F};
 }
 
 void ATUProjectileActor::InitCameraAndSpringArm(USceneComponent* InAttachTo)

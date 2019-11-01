@@ -27,7 +27,7 @@ public:
 	/** BeginPlay*/
 	UFUNCTION(BlueprintCallable, Category=Misc)
 	void BeginPlay() override;
-	
+
 	UFUNCTION(BlueprintPure, Category = Components)
 	USceneComponent* GetRootSceneComponent() const { return RootSceneComponent; }
 
@@ -109,10 +109,9 @@ private:
 	UFUNCTION(Category=Collision)
 	void ActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
 	
-	
 	/** InitProjectileMovementComponent*/
-	UFUNCTION(BlueprintCallable, Category=Movement)
 	void InitProjectileMovementComponent(USceneComponent* UpdatedComponent);
+
 	
 	// ~ Movement End
 	

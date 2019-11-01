@@ -1,0 +1,79 @@
++FIXED: We always check that DamageableComponent is used only in Game-type worlds!
+
+[2019.10.07-08.41.19:720][528]BlueprintLog: New page: Compile MyMyPlayerPawn
+[2019.10.07-08.41.20:539][528]LogUObjectHash: Compacting FUObjectHashTables data took  14.54ms
+[2019.10.07-08.41.23:316][528]LogWindows: Error: === Critical error: ===
+[2019.10.07-08.41.23:316][528]LogWindows: Error: 
+[2019.10.07-08.41.23:316][528]LogWindows: Error: Fatal error!
+[2019.10.07-08.41.23:316][528]LogWindows: Error: 
+[2019.10.07-08.41.23:316][528]LogWindows: Error: Unhandled Exception: EXCEPTION_ACCESS_VIOLATION reading address 0xffffffff
+[2019.10.07-08.41.23:316][528]LogWindows: Error: 
+[2019.10.07-08.41.23:316][528]LogWindows: Error: [Callstack] 0x00007ffedfede680 UE4Editor-CPP_FLY.dll!TMulticastScriptDelegate<FWeakObjectPtr>::ProcessMulticastDelegate<UObject>() [c:\unr_code\ue_4.23\engine\source\runtime\core\public\uobject\scriptdelegates.h:485]
+[2019.10.07-08.41.23:316][528]LogWindows: Error: [Callstack] 0x00007ffedfedf024 UE4Editor-CPP_FLY.dll!UDamageableComponent::SetStateAndNotify_Implementation() [c:\unr_code\cpp_fly\source\cpp_fly\mygamebase\damage\damageablecomponent.cpp:52]
+[2019.10.07-08.41.23:316][528]LogWindows: Error: [Callstack] 0x00007ffedffacbd5 UE4Editor-CPP_FLY.dll!UDamageableComponent::execSetStateAndNotify() [c:\unr_code\cpp_fly\source\cpp_fly\mygamebase\damage\damageablecomponent.h:16]
+[2019.10.07-08.41.23:316][528]LogWindows: Error: [Callstack] 0x00007fff06d08378 UE4Editor-CoreUObject.dll!UnknownFunction []
+[2019.10.07-08.41.23:316][528]LogWindows: Error: [Callstack] 0x00007fff06f41177 UE4Editor-CoreUObject.dll!UnknownFunction []
+[2019.10.07-08.41.23:316][528]LogWindows: Error: [Callstack] 0x00007ffedffac9d3 UE4Editor-CPP_FLY.dll!UDamageableComponent::SetStateAndNotify() [c:\unr_code\cpp_fly\intermediate\build\win64\ue4editor\inc\cpp_fly\damageablecomponent.gen.cpp:33]
+[2019.10.07-08.41.23:316][528]LogWindows: Error: [Callstack] 0x00007ffedfedec8c UE4Editor-CPP_FLY.dll!UDamageableComponent::Activate() [c:\unr_code\cpp_fly\source\cpp_fly\mygamebase\damage\damageablecomponent.cpp:19]
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffef51a3f7c UE4Editor-Engine.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffef518d180 UE4Editor-Engine.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffef51ba2f7 UE4Editor-Engine.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffef4dfd045 UE4Editor-Engine.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffef4e0af3c UE4Editor-Engine.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffef4e06b35 UE4Editor-Engine.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffef5a18b5a UE4Editor-Engine.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007fff06e8a8fa UE4Editor-CoreUObject.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffef3c3b051 UE4Editor-UnrealEd.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffef2d00f82 UE4Editor-Kismet.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffef2ce5309 UE4Editor-Kismet.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffef4d308ae UE4Editor-Engine.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffef2bd3b6c UE4Editor-Kismet.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffef3c85eb8 UE4Editor-UnrealEd.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffef2cca781 UE4Editor-Kismet.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffef2ce5d78 UE4Editor-Kismet.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffefcd57fda UE4Editor-Slate.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffefce3a262 UE4Editor-Slate.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffefce1ccf4 UE4Editor-Slate.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffefceb58b8 UE4Editor-Slate.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffefced14b1 UE4Editor-Slate.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffefcd15231 UE4Editor-Slate.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffefcd9b4f1 UE4Editor-Slate.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffefcd852e8 UE4Editor-Slate.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007ffefcd79c91 UE4Editor-Slate.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007fff17f64e02 UE4Editor-ApplicationCore.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007fff17f526df UE4Editor-ApplicationCore.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007fff17f67340 UE4Editor-ApplicationCore.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007fff17f4edd0 UE4Editor-ApplicationCore.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007fff355a6d41 USER32.dll!UnknownFunction []
+[2019.10.07-08.41.23:317][528]LogWindows: Error: [Callstack] 0x00007fff355a6713 USER32.dll!UnknownFunction []
+[2019.10.07-08.41.23:318][528]LogWindows: Error: [Callstack] 0x00007fff17f688e9 UE4Editor-ApplicationCore.dll!UnknownFunction []
+[2019.10.07-08.41.23:318][528]LogWindows: Error: [Callstack] 0x00007ff7cc3f6980 UE4Editor.exe!UnknownFunction []
+[2019.10.07-08.41.23:318][528]LogWindows: Error: [Callstack] 0x00007ff7cc40a91c UE4Editor.exe!UnknownFunction []
+[2019.10.07-08.41.23:318][528]LogWindows: Error: [Callstack] 0x00007ff7cc40a9fa UE4Editor.exe!UnknownFunction []
+[2019.10.07-08.41.23:318][528]LogWindows: Error: [Callstack] 0x00007ff7cc41b92c UE4Editor.exe!UnknownFunction []
+[2019.10.07-08.41.23:318][528]LogWindows: Error: [Callstack] 0x00007ff7cc41e60e UE4Editor.exe!UnknownFunction []
+[2019.10.07-08.41.23:318][528]LogWindows: Error: [Callstack] 0x00007fff34cd4034 KERNEL32.DLL!UnknownFunction []
+[2019.10.07-08.41.23:318][528]LogWindows: Error: [Callstack] 0x00007fff35a33691 ntdll.dll!UnknownFunction []
+[2019.10.07-08.41.23:318][528]LogWindows: Error: 
+[2019.10.07-08.41.23:346][528]LogExit: Executing StaticShutdownAfterError
+[2019.10.07-08.41.23:351][528]LogWindows: FPlatformMisc::RequestExit(1)
+[2019.10.07-08.41.23:379][528]Log file closed, 10/07/19 13:41:23
+
+---------------- Fixing:
+1) Inside UDamageableComponent::SetStateAndNotify_Implementation()
+	When we comment Broadcast_DamageStateChangedEvent: NO fail!!!
+	
+2) Inside UDamageableComponent::Broadcast_DamageStateChangedEvent()
+
+void UDamageableComponent::Broadcast_DamageStateChangedEvent(bool bInFromActivateReset)
+{
+	check(MyEvents);
+
+	FDamageableStateChangedParams EvParams;
+	EvParams.Sender = TScriptInterface<IDamageable>(this);
+	EvParams.bFatallyDamaged = IsFatallyDamaged();
+	EvParams.bFromActivateReset = bInFromActivateReset;
+	// When we comment this line, no fail
+	MyEvents->StateChanged.Broadcast(EvParams);
+}
+

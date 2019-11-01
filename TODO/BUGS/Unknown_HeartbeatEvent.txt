@@ -1,0 +1,2 @@
+"Heartbeat event firing too often"
+Can safely be ignored: used by analytics sometimes;

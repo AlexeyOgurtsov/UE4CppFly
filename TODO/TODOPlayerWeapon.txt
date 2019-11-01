@@ -1,36 +1,13 @@
 -------------------------------------------------
 ---- Minimal weapon component:
-- Design to be used both player and enemies;
+- Design to be used by both player and enemies;
 - Allows to fire projectiles of the given classes;
 - Automatically searches for the socket;
 - Allows to setup offset from socket;
 ---------------------------------------------------
+------- Quick Weapon Inventory Component ------
+1. Add Fire by WeaponName function to component and the interface
 
-TODO:
-1. Weapon component base class;
-2. Weapon component
-3. Weapon fire infrastructure
-
--------------------------------------------------
---- Quick weapon component:
-
--------------------------------------------------
-Weapon fire infrastructure:
-1. Setup APawnBase::GetWeapons()
-2. Set APCBase::GetPawnWeapons() (+DONE)
-3. Create the UWeaponComponent inside the UPawn (+DONE)
-4. 
-
-------- UWeaponComponent inside UPawn:
-1. 
-
-------- UWeaponComponent
-1. AActor: should we pass as argument when creating?
-2. Locating UStaticMeshComponent to use?
-
-
--------------------------------------------------
---- 1. Setup projectile hierarchy
-
-- Projectile base class (+DONE)
-- Rocket projectile inherited from the base projectile class (+DONE)
+------- Weapon input ------
+1. AltFire/FireThree bindings
+2. Weapon bindings as press (no key up is required to trigger the keypress the next tick)

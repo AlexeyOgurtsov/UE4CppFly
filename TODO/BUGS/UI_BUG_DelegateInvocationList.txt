@@ -1,0 +1,65 @@
+In 4.21
+
+Solved FOR UI
+
+[2019.03.29-08.01.52:764][261]MyLog: UMyUIControllerComponent::ToggleMenu
+[2019.03.29-08.01.52:765][261]MyLog: Opening menu...
+[2019.03.29-08.01.52:765][261]MyLog: WidgetStack "WidgetStack": Activating widget stack
+[2019.03.29-08.01.52:766][261]MyLog: WidgetStack "WidgetStack": Adding top widget to viewport
+[2019.03.29-08.01.52:768][261]MyLog: Registering event helpers...
+[2019.03.29-08.01.52:768][261]LogOutputDevice: Warning: 
+
+Script Stack (2 frames):
+MyEnvWidgetBase.RegisterEventHelpers
+UIControllerComponent.ToggleMenu
+
+[2019.03.29-08.08.32:953][261]LogStats: FPlatformStackWalk::StackWalkAndDump - 400.056 s
+[2019.03.29-08.08.34:670][261]LogOutputDevice: Error: === Handled ensure: ===
+[2019.03.29-08.08.34:794][261]LogOutputDevice: Error: 
+[2019.03.29-08.08.34:794][261]LogOutputDevice: Error: Ensure condition failed: InvocationList[ CurFunctionIndex ] != InDelegate [File:C:\UNR_CODE\UE4_21\UE_4.21\Engine\Source\Runtime\Core\Public\UObject/ScriptDelegates.h] [Line: 556]
+[2019.03.29-08.08.34:913][261]LogOutputDevice: Error: 
+[2019.03.29-08.08.34:914][261]LogOutputDevice: Error: Stack: 
+[2019.03.29-08.08.34:973][261]LogOutputDevice: Error: [Callstack] 0x00007ffdce07d562 UE4Editor-CPP_FLY.dll!TMulticastScriptDelegate<FWeakObjectPtr>::AddInternal() [c:\unr_code\ue4_21\ue_4.21\engine\source\runtime\core\public\uobject\scriptdelegates.h:556]
+[2019.03.29-08.08.35:041][261]LogOutputDevice: Error: [Callstack] 0x00007ffdce078083 UE4Editor-CPP_FLY.dll!TBaseDynamicMulticastDelegate<FWeakObjectPtr,void,FUIControllerReadyParams const &>::__Internal_AddDynamic<UMyEnvWidgetBase>() [c:\unr_code\ue4_21\ue_4.21\engine\source\runtime\core\public\delegates\delegatesignatureimpl.inl:1178]
+[2019.03.29-08.08.35:471][261]LogOutputDevice: Error: [Callstack] 0x00007ffdce088e5e UE4Editor-CPP_FLY.dll!UMyEnvWidgetBase::RegisterEventHelpers_Implementation() [c:\unr_code\cpp_fly\source\cpp_fly\mygamebase\ui\myenvwidgetbase.cpp:54]
+[2019.03.29-08.08.35:484][261]LogOutputDevice: Error: [Callstack] 0x00007ffdfc854b14 UE4Editor-CoreUObject.dll!UFunction::Invoke() [d:\build\++ue4\sync\engine\source\runtime\coreuobject\private\uobject\class.cpp:4861]
+[2019.03.29-08.08.35:516][261]LogOutputDevice: Error: [Callstack] 0x00007ffdfcae73c6 UE4Editor-CoreUObject.dll!UObject::ProcessEvent() [d:\build\++ue4\sync\engine\source\runtime\coreuobject\private\uobject\scriptcore.cpp:1480]
+[2019.03.29-08.08.35:541][261]LogOutputDevice: Error: [Callstack] 0x00007ffdf8174c86 UE4Editor-UMG.dll!UWidget::TakeWidget_Private() [d:\build\++ue4\sync\engine\source\runtime\umg\private\components\widget.cpp:787]
+[2019.03.29-08.08.35:593][261]LogOutputDevice: Error: [Callstack] 0x00007ffdf81742ee UE4Editor-UMG.dll!UWidget::TakeWidget() [d:\build\++ue4\sync\engine\source\runtime\umg\private\components\widget.cpp:709]
+[2019.03.29-08.08.35:707][261]LogOutputDevice: Error: [Callstack] 0x00007ffdf809cd34 UE4Editor-UMG.dll!UUserWidget::AddToScreen() [d:\build\++ue4\sync\engine\source\runtime\umg\private\userwidget.cpp:1055]
+[2019.03.29-08.08.35:751][261]LogOutputDevice: Error: [Callstack] 0x00007ffdce07d774 UE4Editor-CPP_FLY.dll!UWidgetStack::AddTopWidgetToViewport() [c:\unr_code\cpp_fly\source\cpp_fly\util\ui\widgetstack.cpp:118]
+[2019.03.29-08.08.35:776][261]LogOutputDevice: Error: [Callstack] 0x00007ffdce08c935 UE4Editor-CPP_FLY.dll!UMyUIControllerMenu::Toggle() [c:\unr_code\cpp_fly\source\cpp_fly\mygamebase\player\ui\menu\myuicontrollermenu.cpp:134]
+[2019.03.29-08.08.35:873][261]LogOutputDevice: Error: [Callstack] 0x00007ffdfc854b14 UE4Editor-CoreUObject.dll!UFunction::Invoke() [d:\build\++ue4\sync\engine\source\runtime\coreuobject\private\uobject\class.cpp:4861]
+[2019.03.29-08.08.35:909][261]LogOutputDevice: Error: [Callstack] 0x00007ffdfcae73c6 UE4Editor-CoreUObject.dll!UObject::ProcessEvent() [d:\build\++ue4\sync\engine\source\runtime\coreuobject\private\uobject\scriptcore.cpp:1480]
+[2019.03.29-08.08.35:944][261]LogOutputDevice: Error: [Callstack] 0x00007ffdf996a699 UE4Editor-Engine.dll!FInputActionUnifiedDelegate::Execute() [d:\build\++ue4\sync\engine\source\runtime\engine\classes\components\inputcomponent.h:232]
+[2019.03.29-08.08.36:026][261]LogOutputDevice: Error: [Callstack] 0x00007ffdf999c642 UE4Editor-Engine.dll!UPlayerInput::ProcessInputStack() [d:\build\++ue4\sync\engine\source\runtime\engine\private\userinterface\playerinput.cpp:1295]
+[2019.03.29-08.08.36:027][261]LogOutputDevice: Error: [Callstack] 0x00007ffdf9451bdc UE4Editor-Engine.dll!APlayerController::ProcessPlayerInput() [d:\build\++ue4\sync\engine\source\runtime\engine\private\playercontroller.cpp:2476]
+[2019.03.29-08.08.36:067][261]LogOutputDevice: Error: [Callstack] 0x00007ffdf9466b28 UE4Editor-Engine.dll!APlayerController::TickPlayerInput() [d:\build\++ue4\sync\engine\source\runtime\engine\private\playercontroller.cpp:4404]
+[2019.03.29-08.08.36:083][261]LogOutputDevice: Error: [Callstack] 0x00007ffdf944f63b UE4Editor-Engine.dll!APlayerController::PlayerTick() [d:\build\++ue4\sync\engine\source\runtime\engine\private\playercontroller.cpp:2137]
+[2019.03.29-08.08.36:132][261]LogOutputDevice: Error: [Callstack] 0x00007ffdf9465908 UE4Editor-Engine.dll!APlayerController::TickActor() [d:\build\++ue4\sync\engine\source\runtime\engine\private\playercontroller.cpp:4543]
+[2019.03.29-08.08.36:211][261]LogOutputDevice: Error: [Callstack] 0x00007ffdf85ef123 UE4Editor-Engine.dll!FActorTickFunction::ExecuteTick() [d:\build\++ue4\sync\engine\source\runtime\engine\private\actor.cpp:137]
+[2019.03.29-08.08.36:304][261]LogOutputDevice: Error: [Callstack] 0x00007ffdf9894a2d UE4Editor-Engine.dll!TGraphTask<FTickFunctionTask>::ExecuteTask() [d:\build\++ue4\sync\engine\source\runtime\core\public\async\taskgraphinterfaces.h:829]
+[2019.03.29-08.08.36:382][261]LogOutputDevice: Error: [Callstack] 0x00007ffdfbd91798 UE4Editor-Core.dll!FNamedTaskThread::ProcessTasksNamedThread() [d:\build\++ue4\sync\engine\source\runtime\core\private\async\taskgraph.cpp:679]
+[2019.03.29-08.08.36:469][261]LogOutputDevice: Error: [Callstack] 0x00007ffdfbd91c56 UE4Editor-Core.dll!FNamedTaskThread::ProcessTasksUntilQuit() [d:\build\++ue4\sync\engine\source\runtime\core\private\async\taskgraph.cpp:575]
+[2019.03.29-08.08.36:493][261]LogOutputDevice: Error: [Callstack] 0x00007ffdfbda5085 UE4Editor-Core.dll!FTaskGraphImplementation::WaitUntilTasksComplete() [d:\build\++ue4\sync\engine\source\runtime\core\private\async\taskgraph.cpp:1444]
+[2019.03.29-08.08.36:520][261]LogOutputDevice: Error: [Callstack] 0x00007ffdf98ebb64 UE4Editor-Engine.dll!FTickTaskSequencer::ReleaseTickGroup() [d:\build\++ue4\sync\engine\source\runtime\engine\private\ticktaskmanager.cpp:556]
+[2019.03.29-08.08.36:532][261]LogOutputDevice: Error: [Callstack] 0x00007ffdf98fb9a2 UE4Editor-Engine.dll!FTickTaskManager::RunTickGroup() [d:\build\++ue4\sync\engine\source\runtime\engine\private\ticktaskmanager.cpp:1474]
+[2019.03.29-08.08.36:547][261]LogOutputDevice: Error: [Callstack] 0x00007ffdf8fcb6e4 UE4Editor-Engine.dll!UWorld::RunTickGroup() [d:\build\++ue4\sync\engine\source\runtime\engine\private\leveltick.cpp:783]
+[2019.03.29-08.08.36:563][261]LogOutputDevice: Error: [Callstack] 0x00007ffdf8fd74e2 UE4Editor-Engine.dll!UWorld::Tick() [d:\build\++ue4\sync\engine\source\runtime\engine\private\leveltick.cpp:1460]
+[2019.03.29-08.08.36:649][261]LogOutputDevice: Error: [Callstack] 0x00007ffdeae32085 UE4Editor-UnrealEd.dll!UEditorEngine::Tick() [d:\build\++ue4\sync\engine\source\editor\unrealed\private\editorengine.cpp:1726]
+[2019.03.29-08.08.36:658][261]LogOutputDevice: Error: [Callstack] 0x00007ffdeb752346 UE4Editor-UnrealEd.dll!UUnrealEdEngine::Tick() [d:\build\++ue4\sync\engine\source\editor\unrealed\private\unrealedengine.cpp:403]
+[2019.03.29-08.08.36:688][261]LogOutputDevice: Error: [Callstack] 0x00007ff69d3c6225 UE4Editor.exe!FEngineLoop::Tick() [d:\build\++ue4\sync\engine\source\runtime\launch\private\launchengineloop.cpp:3699]
+[2019.03.29-08.08.36:716][261]LogOutputDevice: Error: [Callstack] 0x00007ff69d3d596c UE4Editor.exe!GuardedMain() [d:\build\++ue4\sync\engine\source\runtime\launch\private\launch.cpp:174]
+[2019.03.29-08.08.36:737][261]LogOutputDevice: Error: [Callstack] 0x00007ff69d3d59ea UE4Editor.exe!GuardedMainWrapper() [d:\build\++ue4\sync\engine\source\runtime\launch\private\windows\launchwindows.cpp:145]
+[2019.03.29-08.08.36:766][261]LogOutputDevice: Error: [Callstack] 0x00007ff69d3e48da UE4Editor.exe!WinMain() [d:\build\++ue4\sync\engine\source\runtime\launch\private\windows\launchwindows.cpp:276]
+[2019.03.29-08.08.36:875][261]LogOutputDevice: Error: [Callstack] 0x00007ff69d3e659a UE4Editor.exe!__scrt_common_main_seh() [f:\dd\vctools\crt\vcstartup\src\startup\exe_common.inl:283]
+[2019.03.29-08.08.36:934][261]LogOutputDevice: Error: [Callstack] 0x00007ffe232a1fe4 KERNEL32.DLL!UnknownFunction []
+[2019.03.29-08.08.37:004][261]LogOutputDevice: Error: [Callstack] 0x00007ffe2564cb81 ntdll.dll!UnknownFunction []
+
+
+Description
+	Looks like "check( InvocationList[ CurFunctionIndex ] != InDelegate )" means that AddDynamic called twice for the same method for the same object.
+
+Links:
+	Related: https://answers.unrealengine.com/questions/124191/umg-event-construct-called-every-time-widget-is-ad.html
+	Not very relevant: https://issues.unrealengine.com/issue/UE-10029
