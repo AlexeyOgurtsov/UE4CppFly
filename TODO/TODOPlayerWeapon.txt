@@ -1,13 +1,13 @@
+Player weapon:
+1. Test minimal weapon component
+2. Projectile setup (see TODO Projectile)
+
 -------------------------------------------------
 ---- Minimal weapon component:
 - Design to be used by both player and enemies;
 - Allows to fire projectiles of the given classes;
 - Automatically searches for the socket;
 - Allows to setup offset from socket;
+
 ---------------------------------------------------
 ------- Quick Weapon Inventory Component ------
-1. Add Fire by WeaponName function to component and the interface
-
-------- Weapon input ------
-1. AltFire/FireThree bindings
-2. Weapon bindings as press (no key up is required to trigger the keypress the next tick)

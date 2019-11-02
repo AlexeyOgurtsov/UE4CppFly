@@ -101,7 +101,8 @@ public:
 	// ~ Mesh attachment End
 	
 	// ~ IWeaponInventory Begin
-	virtual void Fire_Implementation(int32 InWeaponIndex) override;
+	virtual bool FireByIndex_Implementation(int32 InWeaponIndex) override;
+	virtual bool FireByName_Implementation(FName InWeaponName) override;
 	// ~ IWeaponInventory End
 
 protected:

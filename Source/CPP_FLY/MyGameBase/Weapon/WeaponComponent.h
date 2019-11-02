@@ -17,11 +17,6 @@ class UWeaponComponent :
 	
 public:
 	UWeaponComponent();
-	
-	// ~ IWeaponInventory DEFAULT implementation Begin
-	// Super NEVER to be called!
-	virtual void Fire_Implementation(int32 InWeaponIndex) override;
-	// ~ IWeaponInventory DEFAULT End
 
 protected:
 private:

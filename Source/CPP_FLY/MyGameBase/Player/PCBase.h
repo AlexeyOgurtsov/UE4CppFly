@@ -36,17 +36,27 @@ public:
 	// ~Helpers for accessing pawn Begin
 	/**
 	* Current pawn casted to ITrackPawnMovement.
-	* Returns nullptr if track movement is not supported by pawn or no pawn attached.
+	* Returns nullptr if track movement is not supported by pawn or no pawn is attached.
 	*/
 	UFUNCTION(BlueprintPure)
 	TScriptInterface<ITrackPawnMovement> GetPawnMovement() const;
 
 	/**
 	* Current pawn casted to IWeaponInventory.
-	* Returns nullptr if weapon inventory is not supported by pawn or no pawn attached.
+	* Returns nullptr if weapon inventory is not supported by pawn or no pawn is attached.
 	*/
 	UFUNCTION(BlueprintPure)
 	TScriptInterface<IWeaponInventory> GetPawnWeapons() const;
+
+	/**
+	* Current pawn casted to IWeaponInventory.
+	* Returns nullptr if weapon inventory is not supported by pawn or no pawn is attached.
+	* Logs if unable to get the pawn weapons
+	*
+	* @see GetPawnWeapons
+	*/
+	UFUNCTION(BlueprintPure)
+	TScriptInterface<IWeaponInventory> LogGetPawnWeapons() const;
 
 	UFUNCTION(BlueprintPure)
 	TScriptInterface<IDamageableContainer> GetPawnDamageableContainer() const;
@@ -172,6 +182,20 @@ private:
 
 	UFUNCTION(Exec)
 	void Action_Fire();
+
+	UFUNCTION(Exec)
+	void Action_AltFire();
+
+	UFUNCTION(Exec)
+	void Action_FireThree();
+
+	UFUNCTION(Exec)
+	void Action_Fire4();
+
+	UFUNCTION(Exec)
+	void Action_Fire5();
+
+	void Action_FireGeneral(FName InWeaponName);
 
 	UFUNCTION(Exec)
 	void Action_ShowMenu();

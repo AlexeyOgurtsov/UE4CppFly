@@ -1,2 +1,2 @@
 1. Minimal player weapon
-2. Movement setup
+3. Movement setup

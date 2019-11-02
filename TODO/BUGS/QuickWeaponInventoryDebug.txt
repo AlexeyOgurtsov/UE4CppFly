@@ -1,5 +1,15 @@
------ BUG
+-------- BUG:
+Unable to shoot more than one weapon at the same time.
+
+-------- BUG:
 Calling AddSocketWithWeapon with weapon name that is ALREADY registered does NOT show any message
+
+
+------- Calling AddSocketWithWeapon with non-existent socket name:
++ OK
+
+------- Calling ReAttachToSockets with non-empty config:
++ OK
 
 --------------------------------------------------------------------------------------------
 ----------------------------------------- OLD BUGS

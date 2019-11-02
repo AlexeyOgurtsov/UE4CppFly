@@ -6,6 +6,7 @@
 #include "MyGameBase/Damage/I/DamageableHelperLib.h"
 #include "MyGameBase/Player/UI/MyUIControllerComponent.h"
 #include "MyGameBase/Player/Test/I/ITestController.h"
+#include "Util/Core/LogUtilLib.h"
 
 #include "Util/Component/MyComponentLib.h"
 
@@ -41,14 +42,14 @@ APCBase::APCBase()
 	}
 	else
 	{
-		UE_LOG(MyLog, Log, TEXT("Not a local controller, so we skipping creation of the UIControllerComponent"));
+		M_LOG(TEXT("Not a local controller, so we skipping creation of the UIControllerComponent"));
 		UIControllerComponent = nullptr;
 	}
 }
 
 void APCBase::BeginPlay()
 {
-	UE_LOG(MyLog, Log, TEXT("PCBase::BeginPlay; IsLocalController=%s"), (IsLocalController() ? TEXT("YES") : TEXT("no")));
+	M_LOG(TEXT("PCBase::BeginPlay; IsLocalController=%s"), (IsLocalController() ? TEXT("YES") : TEXT("no")));
 	bBeginPlayAlreadyCalled = true;
 	Super::BeginPlay();
 
@@ -65,15 +66,15 @@ void APCBase::BeginPlay()
 	bool const bShouldPostponePlayerPawnReady = bPlayerPawnBegunPlay || bSetPawnAlreadyCalled;
 	if(bShouldPostponePlayerPawnReady)
 	{
-		UE_LOG(MyLog, Log, TEXT("APCBase::BeginPlay: Player pawn was ready before the PC, so we perform initialization here"));
+		M_LOG(TEXT("APCBase::BeginPlay: Player pawn was ready before the PC, so we perform initialization here"));
 		PlayerPawnReady();
 	}
 }
 
 void APCBase::DoWhenReady_Implementation()
 {
-	UE_LOG(MyLog, Log, TEXT("PlayerController is READY"));
-	UE_LOG(MyLog, Log, TEXT("Notifying components that Controller is Ready..."));
+	M_LOG(TEXT("PlayerController is READY"));
+	M_LOG(TEXT("Notifying components that Controller is Ready..."));
 	if(auto MyComp = Cast<IMyComponent>(UIControllerComponent))
 	{
 		IMyComponent::Execute_OwnerReady(UIControllerComponent, this);
@@ -81,7 +82,7 @@ void APCBase::DoWhenReady_Implementation()
 
 	// Warning!!! Typically here ALL components to be notified.
 	//UMyComponentLib::NotifyOwnerReady(this);
-	UE_LOG(MyLog, Log, TEXT("Notifying components that Controller is Ready DONE"));
+	M_LOG(TEXT("Notifying components that Controller is Ready DONE"));
 }
 
 void APCBase::PreRegisterAllComponents()
@@ -95,11 +96,11 @@ void APCBase::ChooseComponents()
 	TArray<UActorComponent*> ChildComponents;
 	GetComponents(ChildComponents);
 
-	UE_LOG(MyLog, Log, TEXT("%d child components found"), ChildComponents.Num());
+	M_LOG(TEXT("%d child components found"), ChildComponents.Num());
 	int32 CompIndex = 0;
 	for(UActorComponent* Comp : ChildComponents)
 	{
-		UE_LOG(MyLog, Log, TEXT("Component %d: \"%s\" of \"%s\" class found"), CompIndex , *Comp->GetName(), *Comp->GetClass()->GetName());
+		M_LOG(TEXT("Component %d: \"%s\" of \"%s\" class found"), CompIndex , *Comp->GetName(), *Comp->GetClass()->GetName());
 		CompIndex++;
 	}
 
@@ -117,7 +118,7 @@ void APCBase::ChooseComponent_TestComponent(const TArray<UActorComponent*>& InCo
 {
 	if(TestControllerComponent == nullptr)
 	{
-		UE_LOG(MyLog, Log, TEXT("TestControllerComponent is nullptr, trying to find withing array of components"));
+		M_LOG(TEXT("TestControllerComponent is nullptr, trying to find withing array of components"));
 
 		for(UActorComponent* Comp : InComponents)
 		{
@@ -127,13 +128,13 @@ void APCBase::ChooseComponent_TestComponent(const TArray<UActorComponent*>& InCo
 				{
 			
 					TestControllerComponent = Comp;
-					UE_LOG(MyLog, Log, TEXT("Test component named \"%s\" of \"%s\" class found"), *Comp->GetName(), *Comp->GetClass()->GetName());
+					M_LOG(TEXT("Test component named \"%s\" of \"%s\" class found"), *Comp->GetName(), *Comp->GetClass()->GetName());
 					check(TestControllerComponent);
 				}
 				else
 				{
 					check(TestControllerComponent);
-					UE_LOG(MyLog, Warning, TEXT("More than one interface that implements ITestController found! The first is to be used!"));
+					M_LOG_WARN(TEXT("More than one interface that implements ITestController found! The first is to be used!"));
 					break;
 				}
 			}
@@ -142,12 +143,12 @@ void APCBase::ChooseComponent_TestComponent(const TArray<UActorComponent*>& InCo
 	}
 	else
 	{
-		UE_LOG(MyLog, Log, TEXT("TestComponent is already set"));
+		M_LOG(TEXT("TestComponent is already set"));
 	}
 
 	if(TestControllerComponent == nullptr)
 	{
-		UE_LOG(MyLog, Warning, TEXT("TestControllerComponent NOT found"));
+		M_LOG_WARN(TEXT("TestControllerComponent NOT found"));
 	}
 }
 
@@ -162,12 +163,12 @@ void APCBase::ChooseComponent_UIControllerComponent(const TArray<UActorComponent
 			if(Cast<IUIControllerComponent>(Comp))
 			{
 				UIControllerComponent = Comp;
-				UE_LOG(MyLog, Log, TEXT("UI Controller component named \"%s\" of \"%s\" class found"), *Comp->GetName(), *Comp->GetClass()->GetName());
+				M_LOG(TEXT("UI Controller component named \"%s\" of \"%s\" class found"), *Comp->GetName(), *Comp->GetClass()->GetName());
 			}
 		}
 		else
 		{
-			UE_LOG(MyLog, Warning, TEXT("More than one interface that implements IUIControllerComponent found! The first is to be used!"));
+			M_LOG_WARN(TEXT("More than one interface that implements IUIControllerComponent found! The first is to be used!"));
 			break;
 		}
 	}
@@ -177,7 +178,7 @@ void APCBase::ChooseComponent_UIControllerComponent(const TArray<UActorComponent
 	{
 		if(UIControllerComponent)
 		{
-			UE_LOG(MyLog, Log, TEXT("Destroying UIControllerComponent: PlayerController is not local"));
+			M_LOG(TEXT("Destroying UIControllerComponent: PlayerController is not local"));
 			UIControllerComponent->DestroyComponent(/*bPromoteChildren*/true);
 			UIControllerComponent = nullptr;
 		}
@@ -186,7 +187,7 @@ void APCBase::ChooseComponent_UIControllerComponent(const TArray<UActorComponent
 	{
 		if(UIControllerComponent == nullptr)
 		{
-			UE_LOG(MyLog, Warning, TEXT("Warning! No UIControllerComponent found on local player controller"));
+			M_LOG_WARN(TEXT("Warning! No UIControllerComponent found on local player controller"));
 		}
 	}
 
@@ -201,7 +202,7 @@ void APCBase::DoSetPawn(APawn* InNewPawn, APawn* InOldPawn)
 {
 	const FString FuncPrefix { TEXT("DoSetPawn on PC") };
 
-	UE_LOG(MyLog, Log, TEXT("BeginPlay: already called, so we performing the initialization here"));
+	M_LOG(TEXT("BeginPlay: already called, so we performing the initialization here"));
 	if(InOldPawn)
 	{	
 		MyUnsetPawn(InOldPawn);
@@ -210,12 +211,12 @@ void APCBase::DoSetPawn(APawn* InNewPawn, APawn* InOldPawn)
 	if(InNewPawn)
 	{
 		const FString& PawnClassName = InNewPawn->GetClass()->GetName();
-		UE_LOG(MyLog, Log, TEXT("%s: pawn to set is of class \"%s\""), *FuncPrefix, *PawnClassName);
+		M_LOG(TEXT("%s: pawn to set is of class \"%s\""), *FuncPrefix, *PawnClassName);
 		MySetPawn(InNewPawn);
 	}
 	else
 	{
-		UE_LOG(MyLog, Log, TEXT("%s: pawn to set is nullptr"), *FuncPrefix);
+		M_LOG(TEXT("%s: pawn to set is nullptr"), *FuncPrefix);
 		// Nothing is to do here yet
 	}	
 }
@@ -235,8 +236,8 @@ void APCBase::SetPawn(APawn* InPawn)
 		HasAuthority() ? TEXT("YES") : TEXT("no")
 	);
 
-	UE_LOG(MyLog, Log, TEXT("%s called with pawn \"%s\" (%s)"), *FuncPrefix, *PawnName, *NetworkString);
-	UE_LOG(MyLog, Log, TEXT("%s: Old Pawn is \"%s\" of class \"%s\""), *FuncPrefix, *OldPawnName, *OldPawnClassName);
+	M_LOG(TEXT("%s called with pawn \"%s\" (%s)"), *FuncPrefix, *PawnName, *NetworkString);
+	M_LOG(TEXT("%s: Old Pawn is \"%s\" of class \"%s\""), *FuncPrefix, *OldPawnName, *OldPawnClassName);
 
 	MyOldPawn = OldPawn;
 	MyNewPawn = InPawn;
@@ -256,7 +257,7 @@ void APCBase::MySetPawn_Implementation(APawn* InPawn)
 	PCHelpers::TagAsPlayerPawn(InPawn);
 	if(bBeginPlayAlreadyCalled)
 	{
-		UE_LOG(MyLog, Log, TEXT("MySetPawn: Calling PlayerPawnReady (PC's BeginPlay already called)"));
+		M_LOG(TEXT("MySetPawn: Calling PlayerPawnReady (PC's BeginPlay already called)"));
 		PlayerPawnReady();
 	}
 }
@@ -274,6 +275,16 @@ TScriptInterface<IWeaponInventory> APCBase::GetPawnWeapons() const
 		return IWeaponInventoryHolder::Execute_GetWeapons(PawnWeaponHolder.GetObject());
 	}
 	return nullptr;
+}
+
+TScriptInterface<IWeaponInventory> APCBase::LogGetPawnWeapons() const
+{
+	TScriptInterface<IWeaponInventory> const Weapons = GetPawnWeapons();
+	if( ! Weapons )
+	{
+		M_LOG_ERROR(TEXT("IWeaponInventory is not supported"));
+	}
+	return Weapons;
 }
 
 TScriptInterface<IDamageableContainer> APCBase::GetPawnDamageableContainer() const
@@ -310,13 +321,13 @@ TScriptInterface<ITestController> APCBase::LogGetTestController() const
 {
 	if(nullptr == TestControllerComponent)
 	{
-		UE_LOG(MyLog, Warning, TEXT("TestControllerComponent is nullptr"));
+		M_LOG_WARN(TEXT("TestControllerComponent is nullptr"));
 		return nullptr;
 	}
 	auto TC = TScriptInterface<ITestController>(TestControllerComponent);
 	if(nullptr == TC.GetObject())
 	{
-		UE_LOG(MyLog, Warning, TEXT("TScriptInterface<ITestController>(TestControllerComponent) returned nullptr"));
+		M_LOG_WARN(TEXT("TScriptInterface<ITestController>(TestControllerComponent) returned nullptr"));
 		return nullptr;
 	}
 	return TC;
@@ -324,16 +335,16 @@ TScriptInterface<ITestController> APCBase::LogGetTestController() const
 
 void APCBase::Pawn_BeginPlay_Implementation() 
 {
-	UE_LOG(MyLog, Log, TEXT("Pawn_BeginPlay"));
+	M_LOG(TEXT("Pawn_BeginPlay"));
 	bPlayerPawnBegunPlay = true;
 	if(bBeginPlayAlreadyCalled)
 	{
-		UE_LOG(MyLog, Log, TEXT("Calling PlayerPawnReady (PC's BeginPlay already was called)"));
+		M_LOG(TEXT("Calling PlayerPawnReady (PC's BeginPlay already was called)"));
 		PlayerPawnReady();
 	}
 	else
 	{
-		UE_LOG(MyLog, Log, TEXT("We postpone the PlayerPawn ready processing until the PC's BeginPlay is called"));
+		M_LOG(TEXT("We postpone the PlayerPawn ready processing until the PC's BeginPlay is called"));
 	}
 }
 
@@ -364,7 +375,7 @@ void APCBase::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	UE_LOG(MyLog, Log, TEXT("APCBase::SetupInputComponent"));
+	M_LOG(TEXT("APCBase::SetupInputComponent"));
 	check(InputComponent);
 
 	InputComponent->BindAxis("LookYaw", this, &APCBase::Axis_LookYaw);
@@ -376,7 +387,11 @@ void APCBase::SetupInputComponent()
 	InputComponent->BindAxis("Thrust", this, &APCBase::Axis_Thrust);
 	InputComponent->BindAxis("Roll", this, &APCBase::Axis_Roll);
 
-	InputComponent->BindAction("Fire", IE_Pressed, this, &APCBase::Action_Fire);
+	InputComponent->BindAction("Fire", IE_Repeat, this, &APCBase::Action_Fire);
+	InputComponent->BindAction("AltFire", IE_Repeat, this, &APCBase::Action_AltFire);
+	InputComponent->BindAction("FireThree", IE_Repeat, this, &APCBase::Action_FireThree);
+	InputComponent->BindAction("Fire4", IE_Repeat, this, &APCBase::Action_Fire4);
+	InputComponent->BindAction("Fire5", IE_Repeat, this, &APCBase::Action_Fire5);
 
 	InputComponent->BindAction("ShowMenu", IE_Pressed, this, &APCBase::Action_ShowMenu);
 	InputComponent->BindAction("ShowDebugMenu", IE_Pressed, this, &APCBase::Action_ShowDebugMenu);
@@ -390,7 +405,7 @@ void APCBase::Axis_LookPitch(float InAmount)
 {
 	if(InAmount)
 	{
-		UE_LOG(MyLog, Display, TEXT("Axis_LookPitch: not yet IMPL"));
+		M_LOG(TEXT("Axis_LookPitch: not yet IMPL"));
 	}
 }
 
@@ -398,7 +413,7 @@ void APCBase::Axis_LookYaw(float InAmount)
 {
 	if(InAmount)
 	{
-		UE_LOG(MyLog, Display, TEXT("Axis_LookYaw: not yet IMPL"));
+		M_LOG(TEXT("Axis_LookYaw: not yet IMPL"));
 	}
 }
 
@@ -406,7 +421,7 @@ void APCBase::Axis_LookZoom(float InAmount)
 {
 	if(InAmount)
 	{
-		UE_LOG(MyLog, Display, TEXT("Axis_LookZoom: not yet IMPL"));
+		M_LOG(TEXT("Axis_LookZoom: not yet IMPL"));
 	}
 }
 
@@ -420,7 +435,7 @@ void APCBase::Axis_MoveVertical(float InAmount)
 		}
 		else
 		{
-			UE_LOG(MyLog, Display, TEXT("ITrackPawnMovement is not supported"));
+			M_LOG(TEXT("ITrackPawnMovement is not supported"));
 		}
 	}
 }
@@ -435,7 +450,7 @@ void APCBase::Axis_MoveHorz(float InAmount)
 		}
 		else
 		{
-			UE_LOG(MyLog, Display, TEXT("ITrackPawnMovement is not supported"));
+			M_LOG(TEXT("ITrackPawnMovement is not supported"));
 		}
 	}
 }
@@ -450,7 +465,7 @@ void APCBase::Axis_Thrust(float InAmount)
 		}
 		else
 		{
-			UE_LOG(MyLog, Display, TEXT("ITrackPawnMovement is not supported"));
+			M_LOG(TEXT("ITrackPawnMovement is not supported"));
 		}
 	}
 }
@@ -465,56 +480,82 @@ void APCBase::Axis_Roll(float InAmount)
 		}
 		else
 		{
-			UE_LOG(MyLog, Display, TEXT("ITrackPawnMovement is not supported"));
+			M_LOG(TEXT("ITrackPawnMovement is not supported"));
 		}
 	}
 }
 
 void APCBase::Action_Fire()
 {
-	UE_LOG(MyLog, Log, TEXT("Action: Fire"));
-	if(TScriptInterface<IWeaponInventory> Weapons = GetPawnWeapons())
+	M_LOG(TEXT("Action: Fire"));
+	Action_FireGeneral(TEXT("Fire0"));
+}
+
+
+void APCBase::Action_AltFire()
+{
+	M_LOG(TEXT("Action: AltFire"));
+	Action_FireGeneral(TEXT("Fire1"));
+}
+
+void APCBase::Action_FireThree()
+{
+	M_LOG(TEXT("Action: FireThree"));
+	Action_FireGeneral(TEXT("Fire2"));
+}
+
+void APCBase::Action_Fire4()
+{
+	M_LOG(TEXT("Action: Fire4"));
+	Action_FireGeneral(TEXT("Fire3"));
+}
+
+void APCBase::Action_Fire5()
+{
+	M_LOG(TEXT("Action: Fire5"));
+	Action_FireGeneral(TEXT("Fire4"));
+}
+void APCBase::Action_FireGeneral(FName const InWeaponName)
+{
+	M_LOG(TEXT("WeaponName=%s"), *InWeaponName.ToString());
+	if(TScriptInterface<IWeaponInventory> Weapons = LogGetPawnWeapons())
 	{
-		IWeaponInventory::Execute_Fire(Weapons.GetObject(), /*WeaponIndex*/0);
-	}
-	else
-	{
-		UE_LOG(MyLog, Display, TEXT("IWeaponInventory is not supported"));
+		IWeaponInventory::Execute_FireByName(Weapons.GetObject(), InWeaponName);
 	}
 }
 
 void APCBase::Action_ShowMenu()
 {
-	UE_LOG(MyLog, Log, TEXT("Action: ToggleMenu"));
+	M_LOG(TEXT("Action: ToggleMenu"));
 	if(TScriptInterface<IUIControllerComponent> UIComp = GetUIControllerComponent())
 	{
 		IUIControllerComponent::Execute_ToggleMenu(UIComp.GetObject());
 	}
 	else
 	{
-		UE_LOG(MyLog, Log, TEXT("Action: ToggleMenu: UIControllerComponent is nullptr"));
+		M_LOG(TEXT("Action: ToggleMenu: UIControllerComponent is nullptr"));
 	}
 }
 
 void APCBase::Action_ShowDebugMenu()
 {
-	UE_LOG(MyLog, Log, TEXT("Action: ToggleDebugMenu"));
+	M_LOG(TEXT("Action: ToggleDebugMenu"));
 	if(TScriptInterface<IUIControllerComponent> UIComp = GetUIControllerComponent())
 	{
 		IUIControllerComponent::Execute_ToggleDebugMenu(UIComp.GetObject());
 	}
 	else
 	{
-		UE_LOG(MyLog, Log, TEXT("Action: ToggleDebugMenu: UIControllerComponent is nullptr"));
+		M_LOG(TEXT("Action: ToggleDebugMenu: UIControllerComponent is nullptr"));
 	}
 }
 
 void APCBase::Action_DebugGeneral(int32 InIndex)
 {
-	UE_LOG(MyLog, Log, TEXT("Action: Debug%d"), InIndex);
+	M_LOG(TEXT("Action: Debug%d"), InIndex);
 	if(TScriptInterface<ITestController> TC = LogGetTestController())
 	{
-		UE_LOG(MyLog, Warning, TEXT("Delegating test %d to TestController"), InIndex);
+		M_LOG_WARN(TEXT("Delegating test %d to TestController"), InIndex);
 		ITestController::DoTest(TC.GetObject(), InIndex);
 	}
 }

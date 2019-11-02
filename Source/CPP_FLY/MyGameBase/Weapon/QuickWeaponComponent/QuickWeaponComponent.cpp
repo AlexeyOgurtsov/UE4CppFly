@@ -15,9 +15,9 @@
 
 #include "Misc/Optional.h"
 
-namespace
+namespace QuickWeaponComponentPriv
 {
-	static class FImpl
+	class FImpl
 	{
 	public:
 		static TOptional<FAttachedWeaponSocket> CreateAttachedSocketByName(EWeaponSocketAttachMode InAttachMode, UStaticMeshComponent* Mesh, const FWeaponSocketConfig& InConfig);
@@ -57,7 +57,9 @@ namespace
 	{
 		return FQuickWeaponState(InName, InConfig);
 	}
-} // anonymous
+} // QuickWeaponComponentPriv
+
+using namespace QuickWeaponComponentPriv;
 
 UQuickWeaponComponent::UQuickWeaponComponent()
 {
@@ -160,35 +162,46 @@ FAttachedWeaponSocket* UQuickWeaponComponent::AttachSocketToComponentImpl(EWeapo
 	}
 }
 
-void UQuickWeaponComponent::Fire_Implementation(int32 const InWeaponIndex)
+bool UQuickWeaponComponent::FireByName_Implementation(FName const InWeaponName)
 {
-	M_LOGFUNC_MSG(TEXT("Fire: WeaponIndex = %d"), InWeaponIndex);
-	if(InWeaponIndex >= Config.UsedWeaponNames.Num() || InWeaponIndex < 0)
-	{
-		M_LOG_ERROR(TEXT("Weapon index %d is out of range (Num used weapons=%d)"), InWeaponIndex, Config.UsedWeaponNames.Num());
-		return;
-	}
+	M_LOGFUNC_MSG(TEXT("WeaponName = %s"), *InWeaponName.ToString());
 
-	FName const WeaponName = Config.UsedWeaponNames[InWeaponIndex];
-	M_LOG(TEXT("WeaponName: %s"), *WeaponName.ToString());
-
-	FAttachedWeaponSocket* const AttachedSocket = GetAttachedWeaponSocketByWeaponName(WeaponName);
+	FAttachedWeaponSocket* const AttachedSocket = GetAttachedWeaponSocketByWeaponName(InWeaponName);
 	if(AttachedSocket == nullptr)
 	{
-		return;
+		return false;
 	}
 
-	FQuickWeaponState* const Weapon = GetWeaponByName(WeaponName);
+	FQuickWeaponState* const Weapon = GetWeaponByName(InWeaponName);
 	if(Weapon == nullptr)
 	{
-		return;
+		return false;
 	}
 
 	if(CanFireWeapon(*Weapon))
 	{
 		FireWeaponFromSocket(*Weapon, *AttachedSocket);
 		Weapon->LastShootTime = GetWorld()->GetTimeSeconds();
+		return true;
 	}
+	else
+	{
+		return false;
+	}
+}
+
+bool UQuickWeaponComponent::FireByIndex_Implementation(int32 const InWeaponIndex)
+{
+	M_LOGFUNC_MSG(TEXT("Fire: WeaponIndex = %d"), InWeaponIndex);
+	if(InWeaponIndex >= Config.UsedWeaponNames.Num() || InWeaponIndex < 0)
+	{
+		M_LOG_ERROR(TEXT("Weapon index %d is out of range (Num used weapons=%d)"), InWeaponIndex, Config.UsedWeaponNames.Num());
+		return false;
+	}
+
+	FName const WeaponName = Config.UsedWeaponNames[InWeaponIndex];
+	bool const bFired = FireByName_Implementation(WeaponName);
+	return bFired;
 }
 
 FAttachedWeaponSocket* UQuickWeaponComponent::GetAttachedWeaponSocketByWeaponName(FName const InWeaponName)

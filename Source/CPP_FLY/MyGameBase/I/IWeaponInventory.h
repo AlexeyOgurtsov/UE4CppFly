@@ -17,5 +17,8 @@ class IWeaponInventory
 
 public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void Fire(int32 InWeaponIndex = 0);
+	bool FireByIndex(int32 InWeaponIndex);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	bool FireByName(FName InWeaponName);
 };

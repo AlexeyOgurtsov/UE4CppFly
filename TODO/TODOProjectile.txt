@@ -1,0 +1,8 @@
+TODO Projectile:
+1. Setup blocking collision
+2. Make it "right into socket"
+
+TODO Projectile Art:
+1. Particles
+2. Explosition
+3. Projectile Destruction (Destructible)
