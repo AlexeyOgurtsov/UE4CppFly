@@ -17,15 +17,11 @@
 
 namespace QuickWeaponComponentPriv
 {
-	class FImpl
-	{
-	public:
-		static TOptional<FAttachedWeaponSocket> CreateAttachedSocketByName(EWeaponSocketAttachMode InAttachMode, UStaticMeshComponent* Mesh, const FWeaponSocketConfig& InConfig);
-		static TOptional<FAttachedWeaponSocket> CreateAttachedSkeletalSocketByName(EWeaponSocketAttachMode InAttachMode, USkeletalMeshComponent* Mesh, const FWeaponSocketConfig& InConfig);
-		static FQuickWeaponState CreateWeaponState(UObject* WorldContextObject, FName InName, const FQuickWeaponConfig& InConfig);
-	};
+	TOptional<FAttachedWeaponSocket> CreateAttachedSocketByName(EWeaponSocketAttachMode InAttachMode, UStaticMeshComponent* Mesh, const FWeaponSocketConfig& InConfig);
+	TOptional<FAttachedWeaponSocket> CreateAttachedSkeletalSocketByName(EWeaponSocketAttachMode InAttachMode, USkeletalMeshComponent* Mesh, const FWeaponSocketConfig& InConfig);
+	FQuickWeaponState CreateWeaponState(UObject* WorldContextObject, FName InName, const FQuickWeaponConfig& InConfig);
 
-	TOptional<FAttachedWeaponSocket> FImpl::CreateAttachedSocketByName(EWeaponSocketAttachMode InAttachMode, UStaticMeshComponent* Mesh, const FWeaponSocketConfig& InConfig)
+	TOptional<FAttachedWeaponSocket> CreateAttachedSocketByName(EWeaponSocketAttachMode InAttachMode, UStaticMeshComponent* Mesh, const FWeaponSocketConfig& InConfig)
 	{
 		checkf(Mesh, TEXT("Mesh must be valid"));
 		const UStaticMeshSocket* Socket = Mesh->GetSocketByName(InConfig.SocketName);
@@ -39,7 +35,7 @@ namespace QuickWeaponComponentPriv
 		return AttachedSocket;
 	}
 
-	TOptional<FAttachedWeaponSocket> FImpl::CreateAttachedSkeletalSocketByName(EWeaponSocketAttachMode InAttachMode, USkeletalMeshComponent* Mesh, const FWeaponSocketConfig& InConfig)
+	TOptional<FAttachedWeaponSocket> CreateAttachedSkeletalSocketByName(EWeaponSocketAttachMode InAttachMode, USkeletalMeshComponent* Mesh, const FWeaponSocketConfig& InConfig)
 	{
 		checkf(Mesh, TEXT("Mesh must be valid"));
 		const USkeletalMeshSocket* Socket = Mesh->GetSocketByName(InConfig.SocketName);
@@ -53,7 +49,7 @@ namespace QuickWeaponComponentPriv
 		return AttachedSocket;
 	}
 
-	FQuickWeaponState FImpl::CreateWeaponState(UObject* WorldContextObject, FName InName, const FQuickWeaponConfig& InConfig)
+	FQuickWeaponState CreateWeaponState(UObject* WorldContextObject, FName InName, const FQuickWeaponConfig& InConfig)
 	{
 		return FQuickWeaponState(InName, InConfig);
 	}
@@ -81,7 +77,7 @@ void UQuickWeaponComponent::UpdateFromWeaponConfig()
 	Weapons.Reset();
 	for(const TPair<FName, FQuickWeaponConfig>& NameConfig : Config.Weapons)
 	{
-		Weapons.Add(NameConfig.Key, FImpl::CreateWeaponState(this, NameConfig.Key, NameConfig.Value));
+		Weapons.Add(NameConfig.Key, CreateWeaponState(this, NameConfig.Key, NameConfig.Value));
 	}
 }
 
@@ -319,7 +315,7 @@ FAttachedWeaponSocket* UQuickWeaponComponent::AttachSocketToStaticMeshImpl(EWeap
 		return nullptr;
 	}
 
-	TOptional<FAttachedWeaponSocket> const AttachedSocket = FImpl::CreateAttachedSocketByName(InAttachMode, Mesh, *SocketConfig);
+	TOptional<FAttachedWeaponSocket> const AttachedSocket = CreateAttachedSocketByName(InAttachMode, Mesh, *SocketConfig);
 	if( ! AttachedSocket.IsSet() )
 	{
 		return nullptr;
@@ -338,7 +334,7 @@ FAttachedWeaponSocket* UQuickWeaponComponent::AttachSocketToSkeletalMeshImpl(EWe
 		return nullptr;
 	}
 
-	TOptional<FAttachedWeaponSocket> const AttachedSocket = FImpl::CreateAttachedSkeletalSocketByName(InAttachMode, Mesh, *SocketConfig);
+	TOptional<FAttachedWeaponSocket> const AttachedSocket = CreateAttachedSkeletalSocketByName(InAttachMode, Mesh, *SocketConfig);
 	if( ! AttachedSocket.IsSet() )
 	{
 		return nullptr;

@@ -11,15 +11,64 @@
 #include "Math/Vector.h"
 #include "Math/Rotator.h"
 
-void UQuickWeaponTypesLib::AddSocketWithWeapon(UQuickWeaponComponent* WeaponComponent, FName InWeaponName, const FQuickWeaponConfig& InWeapon, const FWeaponSocketConfig& InSocket, FName InComponentName)
+bool UQuickWeaponTypesLib::AddSocketWithWeapon(UQuickWeaponComponent* WeaponComponent, FName InWeaponName, const FQuickWeaponConfig& InWeapon, const FWeaponSocketConfig& InSocket, FName InComponentName)
 {
 	//checkf(WeaponComponent, TEXT("Passed weapon component must be valid NON-null pointer"));
 	FWeaponComponentConfigRef const ConfigRef {InWeaponName};
-	WeaponComponent->Config.Sockets.Add(ConfigRef.SocketName, InSocket);
-	WeaponComponent->Config.Weapons.Add(InWeaponName, InWeapon);
+	if( ! AddNewWeaponSocket(WeaponComponent->Config, ConfigRef.SocketName, InSocket) )
+	{
+		return false;
+	}
+	if( ! AddNewWeapon(WeaponComponent->Config, InWeaponName, InWeapon) )
+	{
+		return false;
+	}
 	WeaponComponent->Config.UsedWeaponNames.Add(InWeaponName);
-	WeaponComponent->Config.WeaponSocketNames.Add(InWeaponName, ConfigRef.SocketName);
+	if( ! SetSocketToWeapon( WeaponComponent->Config, InWeaponName, ConfigRef.SocketName ) )
+	{
+		return false;
+	}
 	WeaponComponent->SocketsToAttach.Add(FWeaponComponentSocketRef{ConfigRef, InSocket.SocketName, InComponentName});
+	return true;
+}
+
+bool UQuickWeaponTypesLib::AddNewWeaponSocket(UPARAM(Ref) FQuickWeaponInventoryConfig& Config, const FName InSocketName, const FWeaponSocketConfig& InSocketConfig)
+{
+	M_LOGFUNC();
+	FWeaponSocketConfig* const Socket = Config.Sockets.Find(InSocketName);
+	if(Socket != nullptr)
+	{
+		M_LOG_ERROR(TEXT("Weapon socket with name \"%s\" already registered"), *InSocketName.ToString());
+		return false;
+	}
+	Config.Sockets.Add(InSocketName, InSocketConfig);
+	return true;
+}
+
+bool UQuickWeaponTypesLib::AddNewWeapon(UPARAM(Ref) FQuickWeaponInventoryConfig& Config, const FName InWeaponName, const FQuickWeaponConfig& InWeaponConfig)
+{
+	M_LOGFUNC();
+	FQuickWeaponConfig* const Weapon = Config.Weapons.Find(InWeaponName);
+	if(Weapon != nullptr)
+	{
+		M_LOG_ERROR(TEXT("Weapon with name \"%s\" already registered"), *InWeaponName.ToString());
+		return false;
+	}
+	Config.Weapons.Add(InWeaponName, InWeaponConfig);
+	return true;
+}
+
+bool UQuickWeaponTypesLib::SetSocketToWeapon(UPARAM(Ref) FQuickWeaponInventoryConfig& Config, FName InWeaponName, FName InSocketName)
+{
+	M_LOGFUNC();
+	FName* SocketName = Config.WeaponSocketNames.Find(InWeaponName);
+	if(SocketName != nullptr)
+	{
+		M_LOG_ERROR(TEXT("Weapon with name \"%s\" already binded to socket"), *InWeaponName.ToString());
+		return false;
+	}
+	Config.WeaponSocketNames.Add(InWeaponName, InSocketName);
+	return true;
 }
 
 void FAttachedWeaponSocket::UpdateFromSocket()
@@ -73,7 +122,7 @@ FAttachedWeaponSocket::FAttachedWeaponSocket()
 {
 }
 
-FAttachedWeaponSocket::FAttachedWeaponSocket(EWeaponSocketAttachMode InAttachMode, const FWeaponSocketConfig& InSocketConfig, const UStaticMeshSocket* InSocket, UMeshComponent* InMeshComponent)
+FAttachedWeaponSocket::FAttachedWeaponSocket(EWeaponSocketAttachMode const InAttachMode, const FWeaponSocketConfig& InSocketConfig, const UStaticMeshSocket* const InSocket, UMeshComponent* const InMeshComponent)
 : AttachMode {InAttachMode}
 , SocketConfig {InSocketConfig}
 , SocketType {EWeaponSocketType::StaticMesh}
@@ -84,7 +133,7 @@ FAttachedWeaponSocket::FAttachedWeaponSocket(EWeaponSocketAttachMode InAttachMod
 	checkf(InMeshComponent, TEXT("Passed mesh component must be valid NON-null pointer"));
 }
 
-FAttachedWeaponSocket::FAttachedWeaponSocket(EWeaponSocketAttachMode InAttachMode, const FWeaponSocketConfig& InSocketConfig, const USkeletalMeshSocket* InSocket, UMeshComponent* InMeshComponent)
+FAttachedWeaponSocket::FAttachedWeaponSocket(EWeaponSocketAttachMode const InAttachMode, const FWeaponSocketConfig& InSocketConfig, const USkeletalMeshSocket* const InSocket, UMeshComponent* const InMeshComponent)
 : AttachMode {InAttachMode}
 , SocketConfig {InSocketConfig}
 , SocketType {EWeaponSocketType::SkeletalMesh}
@@ -99,7 +148,7 @@ FQuickWeaponState::FQuickWeaponState()
 {
 }
 
-FQuickWeaponState::FQuickWeaponState(FName InWeaponName, const FQuickWeaponConfig& InConfig)
+FQuickWeaponState::FQuickWeaponState(FName const InWeaponName, const FQuickWeaponConfig& InConfig)
 : WeaponName{InWeaponName}
 , Config {InConfig}
 {

@@ -3,6 +3,7 @@ Unable to shoot more than one weapon at the same time.
 
 -------- BUG:
 Calling AddSocketWithWeapon with weapon name that is ALREADY registered does NOT show any message
++ FIXED
 
 
 ------- Calling AddSocketWithWeapon with non-existent socket name:
