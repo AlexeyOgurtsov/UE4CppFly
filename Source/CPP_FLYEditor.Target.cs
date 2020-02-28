@@ -8,6 +8,7 @@ public class CPP_FLYEditorTarget : TargetRules
 	public CPP_FLYEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
+		DefaultBuildSettings = BuildSettingsVersion.Latest;
 
 		ExtraModuleNames.AddRange( new string[] { "CPP_FLY" } );
 	}

@@ -8,6 +8,7 @@ public class CPP_FLYTarget : TargetRules
 	public CPP_FLYTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
+		DefaultBuildSettings = BuildSettingsVersion.Latest;
 
 		ExtraModuleNames.AddRange( new string[] { "CPP_FLY" } );
 	}

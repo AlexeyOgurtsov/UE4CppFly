@@ -1,4 +1,4 @@
-D:
+C:
 set location=C:\UNR_CODE\
-set sniploc=D:\UNR_SCRIPT\SNIPPETS
+set sniploc=C:\U4L\Snip
 call %sniploc%\MyClean.bat %location%\CPP_FLY
