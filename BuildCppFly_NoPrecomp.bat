@@ -1,5 +1,5 @@
 C:
-set location=C:\UNR_CODE
+set location=C:\U4L\P
 set projectname=CPP_FLY
 set projectdirname=CPP_FLY
 set configpostfix=Editor_NoPrecomp
