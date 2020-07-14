@@ -6,3 +6,10 @@ TODO Projectile Art:
 1. Particles
 2. Explosition
 3. Projectile Destruction (Destructible)
+
+
+TODO Use Quick weapon component from Util:
+See file MyGameBase\Pawn\MyPawnBase.cpp
+See file MyGameBase\Pawn\MyPawnBase.h // IWeaponInventoryHolder
+See file MyGameBase\Player\PCBase.cpp // IWeaponInventory
+See file MyGameBase\UI\MyGameplayWidgetBase.cpp 

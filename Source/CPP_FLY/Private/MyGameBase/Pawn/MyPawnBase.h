@@ -6,7 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "MyGameBase/Damage/I/IDamageableContainer.h"
 #include "MyGameBase/Damage/I/DamageableEvents.h"
-#include "MyGameBase/I/IWeaponInventoryHolder.h"
+#include "Util/Weapon/I/IWeaponInventoryHolder.h"
 #include "MyPawnBase.generated.h"
 
 class IMyController;

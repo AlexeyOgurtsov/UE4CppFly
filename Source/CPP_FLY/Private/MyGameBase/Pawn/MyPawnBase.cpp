@@ -2,7 +2,7 @@
 #include "MyEngine/MyEngineHelperLib.h"
 #include "MyGameBase/Controller/I/IMyController.h"
 #include "MyGameBase/Damage/DamageableComponent.h"
-#include "MyGameBase/Weapon/QuickWeaponComponent/QuickWeaponComponent.h"
+#include "Util/Weapon/QuickWeaponComponent/QuickWeaponComponent.h"
 
 #include "Engine/EngineTypes.h"
 #include "GameFramework/DamageType.h"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MyGameBase/Weapon/MyProjectileBase.h"
+#include "Util/Weapon/MyProjectileBase.h"
 #include "RocketProjectile.generated.h"
 
 UCLASS()

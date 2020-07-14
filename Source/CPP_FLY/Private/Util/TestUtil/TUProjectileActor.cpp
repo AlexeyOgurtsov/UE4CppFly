@@ -20,6 +20,21 @@
 
 /**
 * TODO:
+* 1. Make destruction on hit to be turnable on/off
+* 1.1. Projectile
+* 1.2. Quick weapon component socket level
+* 1.3. Indestructible during some time right before launch parameter
+*
+* 2. Collision debug tools
+* 2.1. Show bounding volume
+* 2.2. 
+* 
+* TODO festoon:
+* 1. Particles
+*/
+
+/**
+* TODO:
 * 0. Config
 * 0.1. Change config
 * 0.2. Init default damage type
@@ -34,6 +49,8 @@ using namespace ProjectileConfig;
 
 ATUProjectileActor::ATUProjectileActor()
 {
+	ConfigProps.Audio.HitSound.Sound = UAudioUtilLib::LoadInConstructor(TEXT("HitSound"), TEXT("SoundCue'/Game/StarterContent/Audio/Explosion_Cue.Explosion_Cue'"));
+
 	OnActorHit.AddDynamic(this, &ATUProjectileActor::ActorHit);
 
 	InitMesh(nullptr);
@@ -102,19 +119,33 @@ void ATUProjectileActor::MakeImpact(AActor* const ActorToDamage, const FHitResul
 
 	// TODO: Spawn explosition
 
-	bool bDestroyed = Destroy();
-	M_LOG_WARN_IF( ! bDestroyed, TEXT("AActor::Destroy() returned false for '%s'"), *ULogUtilLib::GetNameAndClassSafe(this));
+	if( ! ShouldPreventDestructionOnHit() )
+	{
+		bool bDestroyed = Destroy();
+		M_LOG_WARN_IF(!bDestroyed, TEXT("AActor::Destroy() returned false for '%s'"), *ULogUtilLib::GetNameAndClassSafe(this));
+	}
+	else
+	{
+		M_LOG_WARN(TEXT("Projectile \"%s\": Preventing destruction on hit due to flag"), *ULogUtilLib::GetNameAndClassSafe(this));
+	}
 }
 
 void ATUProjectileActor::InitAudio(USceneComponent* InParentComponent)
 {
 	M_LOGFUNC();
-	FlySound = CreateDefaultSubobject<UAudioComponent>(TEXT("FlySoundComponent"));
-	FlySound->bAutoActivate = false;
-
-	if(InParentComponent)
+	FlySound = CreateOptionalDefaultSubobject<UAudioComponent>(TEXT("FlySoundComponent"));
+	if (FlySound)
 	{
-		FlySound->SetupAttachment(InParentComponent);
+		FlySound->bAutoActivate = false;
+
+		if (InParentComponent)
+		{
+			FlySound->SetupAttachment(InParentComponent);
+		}
+
+		const TCHAR* RESOURCE_NAME = TEXT("FlySound");
+		const TCHAR* const AUDIO_PATH = TEXT("SoundWave'/Game/StarterContent/Audio/Smoke01.Smoke01'");
+		UAudioUtilLib::LoadInConstructor(FlySound, RESOURCE_NAME, AUDIO_PATH);
 	}
 }
 
@@ -125,12 +156,15 @@ void ATUProjectileActor::InitProjectileMovementComponent(USceneComponent* InUpda
 
 	check(InUpdatedComponent);
 
-	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
-	ProjectileMovementComponent->MaxSpeed = ProjectileConfig::Default::MAX_SPEED;
-	ProjectileMovementComponent->InitialSpeed = INITIAL_SPEED;
-	ProjectileMovementComponent->ProjectileGravityScale = 0.0F;
-	ProjectileMovementComponent->bInitialVelocityInLocalSpace = true;
-	ProjectileMovementComponent->Velocity = FVector{INITIAL_SPEED, 0.0F, 0.0F};
+	ProjectileMovementComponent = CreateOptionalDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
+	if(ProjectileMovementComponent)
+	{
+		ProjectileMovementComponent->MaxSpeed = ProjectileConfig::Default::MAX_SPEED;
+		ProjectileMovementComponent->InitialSpeed = INITIAL_SPEED;
+		ProjectileMovementComponent->ProjectileGravityScale = 0.0F;
+		ProjectileMovementComponent->bInitialVelocityInLocalSpace = true;
+		ProjectileMovementComponent->Velocity = FVector{ INITIAL_SPEED, 0.0F, 0.0F };
+	}
 }
 
 void ATUProjectileActor::InitCameraAndSpringArm(USceneComponent* InAttachTo)

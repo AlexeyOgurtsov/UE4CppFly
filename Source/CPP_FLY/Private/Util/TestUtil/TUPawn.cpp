@@ -1,6 +1,10 @@
 
 #include "TUPawn.h"
+#include "Util/Weapon/QuickWeaponComponent/QuickWeaponTypesLib.h"
+#include "Util/Selection/ActorSelectionComponent.h"
+
 #include "VisibleActorConfig.h"
+#include "Util/Core/Phys/PhysUtilLib.h"
 #include "Util/Core/LogUtilLib.h"
 
 #include "GameFramework/PlayerController.h"
@@ -13,6 +17,8 @@
 #include "Engine/StaticMesh.h"
 #include "Components/SphereComponent.h"
 
+#include "Engine/World.h"
+#include "CollisionQueryParams.h"
 #include "UObject/ConstructorHelpers.h"
 
 
@@ -20,6 +26,7 @@ ATUPawn::ATUPawn()
 {
 	M_LOGFUNC_IF(bLogBigEvents);
 	LogThisIf(bLogBigEvents);
+	bUseControllerRotationYaw = true;
 
 	InitMesh(nullptr);
 	RootComponent = Mesh;
@@ -29,6 +36,38 @@ ATUPawn::ATUPawn()
 
 	InitProxSphere(RootSceneComponent);
 	InitCameraAndSpringArm(RootSceneComponent);
+
+	InitWeaponComponent();
+	InitActorSelector();
+}
+
+void ATUPawn::InitWeaponComponent()
+{
+	M_LOGFUNC_IF(bLogBigEvents);
+	WeaponComponent = CreateOptionalDefaultSubobject<UQuickWeaponComponent>(TUPAWN_DEFAULT_WEAPON_COMPONENT_NAME);
+	if(WeaponComponent)
+	{
+		UQuickWeaponTypesLib::InitializePrimaryWeapon(WeaponComponent);
+	}
+
+}
+
+void ATUPawn::InitActorSelector()
+{
+	M_LOGFUNC_IF(bLogBigEvents);
+	ActorSelector = CreateDefaultSubobject<UActorSelectionComponent>(TUPAWN_DEFAULT_ACTOR_SELECTOR_COMPONENT_NAME);
+}
+
+void ATUPawn::InitQuickWeaponSocketForComponent(FName InSocketName, FName InComponentName)
+{
+	if(WeaponComponent == nullptr)
+	{
+		return;
+	}
+	if(Mesh)
+	{
+		WeaponComponent->SocketsToAttach.Add(FWeaponComponentSocketRef(FWeaponComponentConfigRef(InSocketName), InSocketName, InComponentName));
+	}
 }
 
 void ATUPawn::PossessedBy(AController* InNewController)
@@ -131,6 +170,7 @@ void ATUPawn::MyBeginPlay_Implementation()
 {
 	M_LOGFUNC_IF(bLogBigEvents);
 	LogThisIf(bLogBigEvents);
+	WeaponComponent->ReAttachToSockets();
 }
 
 void ATUPawn::BeginPlayFinished()
@@ -166,7 +206,7 @@ void ATUPawn::InitMesh(USceneComponent* InAttachTo)
 	M_LOG_ERROR_IF( ! MeshFinder.Succeeded(), TEXT("Default mesh (\"%s\") NOT found"), VisibleActorConfig::Default::MESH_ASSET_PATH);
 
 	{
-		Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+		Mesh = CreateOptionalDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 		if(MeshFinder.Succeeded())
 		{
 			M_LOG(TEXT("Default mesh (\"%s\") found, setting it up"), VisibleActorConfig::Default::MESH_ASSET_PATH);
@@ -189,6 +229,215 @@ void ATUPawn::InitProxSphere(USceneComponent* InAttachTo)
 	{
 		ProxSphere->SetupAttachment(InAttachTo);
 	}
+}
+
+AActor* ATUPawn::TraceByLook(bool bInTraceComplex, ECollisionChannel InCollisionChannel, ELogFlags InLogFlags) const
+{
+	return TraceByLookCustom(DefaultLookTraceLength, bInTraceComplex, InCollisionChannel, InLogFlags);
+}
+
+AActor* ATUPawn::TraceByLookCustom(float InLength, bool bInTraceComplex, ECollisionChannel InCollisionChannel, ELogFlags InLogFlags) const
+{
+	M_LOG_IF_FLAGS(InLogFlags, TEXT("Calling \"%s\" on object \"%s\" of class \"%s\" with Length=%f, TraceComplex=%s, CollisionChannel=%s"), 
+			TEXT(__FUNCTION__), 
+			*GetName(), *GetClass()->GetName(),
+			InLength, (bInTraceComplex ? TEXT("TRUE") : TEXT("false")), *UPhysUtilLib::GetCollisionChannelString(InCollisionChannel)
+			);
+
+	FVector ViewLocation;
+	FRotator ViewRotation;
+
+	if(Controller)
+	{
+		M_LOG_IF_FLAGS(InLogFlags, TEXT("Pawn is possessed with controller \"%s\" of class \"%s\""), *Controller->GetName(), *Controller->GetClass()->GetName());
+		Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
+	}
+	else
+	{
+		M_LOG_IF_FLAGS(InLogFlags, TEXT("No controller attached"));
+		GetActorEyesViewPoint(ViewLocation, ViewRotation);
+	}
+
+	M_LOG_IF_FLAGS(InLogFlags, TEXT("View location = %s, View rotation = %s"), *ViewLocation.ToString(), *ViewRotation.ToString());
+
+	FHitResult HitResult;
+	const AActor* const IgnoreActor = this;
+	FCollisionQueryParams QueryParams { FName(TEXT("LookTraceTag")), bInTraceComplex, IgnoreActor };
+	FCollisionResponseParams ResponseParams;
+	const bool bHit = GetWorld()->LineTraceSingleByChannel
+	(
+	 	HitResult,
+		ViewLocation, ViewLocation + ViewRotation.Vector() * InLength,
+		InCollisionChannel,
+		QueryParams,
+		ResponseParams
+	);
+	if( ! bHit )
+	{
+		M_LOG_ERROR_IF_FLAGS(InLogFlags, TEXT("No actor found during the trace"));
+		return nullptr;
+	}
+	AActor* const Actor = HitResult.Actor.Get();
+	M_LOG_IF_FLAGS(InLogFlags, TEXT("Actor \"%s\" of class \"%s\" is found during the trace"), *Actor->GetName(), *Actor->GetClass()->GetName());
+	return Actor;
+}
+
+void ATUPawn::OnController_Axis_LookPitch_Implementation(float InAmount)
+{
+	ITUController::Execute_Default_Axis_LookPitch(GetController(), this, InAmount);
+}
+
+void ATUPawn::OnController_Axis_LookYaw_Implementation(float InAmount)
+{
+	ITUController::Execute_Default_Axis_LookYaw(GetController(), this, InAmount);
+}
+
+void ATUPawn::OnController_Axis_Forward_Implementation(float InAmount)
+{
+	ITUController::Execute_Default_Axis_Forward(GetController(), this, InAmount);
+}
+
+void ATUPawn::OnController_Axis_Right_Implementation(float InAmount)
+{
+	ITUController::Execute_Default_Axis_Right(GetController(), this, InAmount);
+}
+
+void ATUPawn::OnController_Axis_Up_Implementation(float InAmount)
+{
+	ITUController::Execute_Default_Axis_Up(GetController(), this, InAmount);
+}
+
+void ATUPawn::OnController_Action_Use_Implementation()
+{
+}
+
+void ATUPawn::OnController_Action_UseTwo_Implementation()
+{
+	// Nothing is done here yet
+}
+
+void ATUPawn::OnController_Action_UseThree_Implementation()
+{
+	// Nothing is done here yet
+}
+
+void ATUPawn::PawnStartFire(uint8 FireModeNum)
+{
+	Super::PawnStartFire(FireModeNum);
+	FireWeaponByIndex_IfCan(FireModeNum);
+}
+
+bool ATUPawn::FireWeaponByIndex_IfCan(int32 InWeaponIndex)
+{
+	if(WeaponComponent == nullptr)
+	{
+		M_LOG_ERROR(TEXT("Unable to fire: weapon component is nullptr"));
+		return false;
+	}
+
+	bool bSucceeded = IWeaponInventory::Execute_FireByIndex(WeaponComponent, InWeaponIndex);
+	M_LOG_ERROR_IF(bSucceeded, TEXT("Firing failed (index = %d)"), InWeaponIndex);
+	return bSucceeded; 
+}
+
+void ATUPawn::OnController_Action_Fire_Implementation()
+{
+	FireWeaponByIndex_IfCan(0);
+}
+
+void ATUPawn::OnController_Action_FireTwo_Implementation()
+{
+	FireWeaponByIndex_IfCan(1);
+}
+
+void ATUPawn::OnController_Action_FireThree_Implementation()
+{
+	FireWeaponByIndex_IfCan(2);
+}
+
+void ATUPawn::OnController_Action_SelectZero_Implementation()
+{
+	// Nothing is done here yet
+}
+
+void ATUPawn::OnController_Action_SelectOne_Implementation()
+{
+	// Nothing is done here yet
+}
+
+void ATUPawn::OnController_Action_SelectTwo_Implementation()
+{
+	// Nothing is done here yet
+}
+
+void ATUPawn::OnController_Action_SelectThree_Implementation()
+{
+	// Nothing is done here yet
+}
+
+void ATUPawn::OnController_Action_SelectFour_Implementation()
+{
+	// Nothing is done here yet
+}
+
+void ATUPawn::OnController_Action_SelectFive_Implementation()
+{
+	// Nothing is done here yet
+}
+
+void ATUPawn::OnController_Action_SelectSix_Implementation()
+{
+	// Nothing is done here yet
+}
+
+void ATUPawn::OnController_Action_SelectSeven_Implementation()
+{
+	// Nothing is done here yet
+}
+
+void ATUPawn::OnController_Action_SelectEight_Implementation()
+{
+	// Nothing is done here yet
+}
+
+void ATUPawn::OnController_Action_SelectNine_Implementation()
+{
+	// Nothing is done here yet
+}
+
+void ATUPawn::OnController_Action_OpenGameMenu_Implementation()
+{
+	// Nothing is done here yet
+}
+
+void ATUPawn::OnController_Action_CloseGameMenu_Implementation()
+{
+	// Nothing is done here yet
+}
+
+void ATUPawn::OnController_Action_DebugOne_Implementation()
+{
+	// Nothing is done here yet
+}
+
+void ATUPawn::OnController_Action_DebugTwo_Implementation()
+{
+	// Nothing is done here yet
+}
+
+void ATUPawn::OnController_Action_DebugThree_Implementation()
+{
+	// Nothing is done here yet
+}
+
+void ATUPawn::OnController_Action_ActorSelectNext_Implementation()
+{
+	// Nothing is done here yet
+}
+
+void ATUPawn::OnController_Action_ActorSelectPrevious_Implementation()
+{
+	// Nothing is done here yet
 }
 
 TScriptInterface<ITUController> ATUPawn::K2GetTUController() const

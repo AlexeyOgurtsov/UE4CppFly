@@ -6,7 +6,7 @@
 #include "MyGameBase/Damage/I/IDamageableContainer.h"
 #include "MyGameBase/Damage/I/IDamageable.h"
 #include "MyGameBase/Pawn/I/ITrackPawnMovement.h"
-#include "MyGameBase/I/IWeaponInventory.h"
+#include "Util/Weapon/I/IWeaponInventory.h"
 
 #include "MySys/HelperLib.h"
 

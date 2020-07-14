@@ -4,7 +4,17 @@
 #include "Util\Core\Log\MyLoggingTypes.h"
 #include "I/ITUController.h"
 #include "TUTypes.h"
+#include "Engine/EngineTypes.h"
+#include "UObject/ScriptInterface.h"
+#include <Util\Selection\ActorSelectionTypes.h>
 #include "TUPlayerController.generated.h"
+
+class IActorSelector;
+class UActorSelectionComponent;
+class UActorSelectorUIComponent;
+
+const FName TUCONTROLLER_DEFAULT_ACTOR_SELECTOR_COMPONENT_NAME = TEXT("ControllerActorSelectorComponent");
+const FName TUCONTROLLER_SELECTOR_UI_COMPONENT_NAME = TEXT("ControllerActorSelectorUI");
 
 // ~Types begin
 UENUM(BlueprintType, Meta=(Bitflags, UseEnumValuesAsMaskValuesInEditor="true"))
@@ -64,6 +74,13 @@ public:
 	virtual void SetPawn(APawn* InPawn) override;
 	// ~AController End
 
+	// ~Helpers Begin
+	UFUNCTION(BlueprintCallable, Category=Trace)
+	AActor* TraceByLook(bool bInTraceComplex = false, ECollisionChannel CollisionChannel = ECollisionChannel::ECC_Visibility, ELogFlags InLogFlags = ELogFlags::LogEverSuccess) const;
+
+	AActor* TraceByLookCustom(float Length, bool bTraceComplex = false, ECollisionChannel CollisionChannel = ECollisionChannel::ECC_Visibility, ELogFlags InLogFlags = ELogFlags::LogEverSuccess) const;
+	// ~Helpers End
+
 	// ~Logging Begin
 	virtual void LogThis();
 	void LogThisIf(bool bInShouldLog);
@@ -71,6 +88,13 @@ public:
 
 	// ~ITUController Begin
 	virtual void PawnBeginPlayEnded_Implementation() override;
+
+	virtual void Default_Axis_LookPitch_Implementation(APawn* P, float InAmount) override;
+	virtual void Default_Axis_LookYaw_Implementation(APawn* P, float InAmount) override;
+
+	virtual void Default_Axis_Forward_Implementation(APawn* P, float InAmount) override;
+	virtual void Default_Axis_Right_Implementation(APawn* P, float InAmount) override;
+	virtual void Default_Axis_Up_Implementation(APawn* P, float InAmount) override;
 	// ~ITUController End
 	
 	virtual void SetupInputComponent() override;
@@ -116,6 +140,32 @@ public:
 	UFUNCTION(BlueprintPure, Category = Pawn)
 	ATUPawn* GetMyTUPawnChecked() const;
 	// ~Access helpers End
+
+	// ~Actor selection Begin		
+	UFUNCTION(BlueprintPure, Category=Selection)
+	TScriptInterface<IActorSelector> GetActorSelector() const { return ActorSelector; }
+
+	UFUNCTION(BlueprintPure, Category = Selection)
+	UActorSelectionComponent* GetActorSelectionComponent() const;
+
+	UFUNCTION(BlueprintPure, Category = Selection)
+	bool IsActorSelected() const;
+
+	UFUNCTION(BlueprintPure, Category = Selection)
+	AActor* GetSelectedActor() const;
+
+	UFUNCTION(BlueprintCallable, Category = Selection)
+	void AddSelectableActorClass(const UClass* InActorClass);
+
+	UFUNCTION(BlueprintCallable, Category = Selection)
+	void AddSelectableActorClassWithTags(const UClass* InActorClass, const TArray<FName>& InTags);
+
+	UFUNCTION(BlueprintCallable, Category = Selection)
+	void AddSelectableActorTags(const TArray<FName>& InTags);
+
+	UFUNCTION(BlueprintCallable, Category = Selection)
+	void AddActorSelectionRule(const FActorSelectionRule& InRule);
+	// ~Actor selection End
 	
 protected:
 	UFUNCTION(Exec, Category = Motion)
@@ -196,6 +246,18 @@ protected:
 	UFUNCTION(Exec, Category = Debug)
 	virtual void Action_DebugThree();
 
+	UFUNCTION(Exec, Category = Selection)
+	virtual void Action_SelectNextActor();
+
+	UFUNCTION(Exec, Category = Selection)
+	virtual void Action_SelectPreviousActor();
+
+	UFUNCTION(Exec, Category = Inventory)
+	virtual void Action_SelectNextInventory();
+
+	UFUNCTION(Exec, Category = Inventory)
+	virtual void Action_SelectPreviousInventory();
+
 	/**
 	* Returns true if game input actions are to be processed.
 	* @note: overload.
@@ -204,6 +266,8 @@ protected:
 
 	virtual void ActionMoveGeneral(APawn* P, const FVector& InDirection, float InAmount);
 	virtual void ActionSelectGeneral(int32 InIndex);
+	virtual void ActionSelectActorGeneral(int32 InIndex);
+	virtual void ActionSelectInventoryGeneral(int32 InIndex);
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config", Meta=(AllowPrivateAccess = true))
@@ -240,9 +304,45 @@ private:
 	void Action_SelectEightChecked();
 	void Action_SelectNineChecked();
 
+	void Action_OpenGameMenuChecked();
+	void Action_CloseGameMenuChecked();
+
+	void Action_DebugOneChecked();
+	void Action_DebugTwoChecked();
+	void Action_DebugThreeChecked();
+
+	void Action_SelectNextActorChecked();
+	void Action_SelectPreviousActorChecked();
+
+	void Action_SelectNextInventoryChecked();
+	void Action_SelectPreviousInventoryChecked();
+
+	void Action_SelectActorZeroChecked();
+	void Action_SelectActorOneChecked();
+	void Action_SelectActorTwoChecked();
+	void Action_SelectActorThreeChecked();
+	void Action_SelectActorFourChecked();
+	void Action_SelectActorFiveChecked();
+	void Action_SelectActorSixChecked();
+	void Action_SelectActorSevenChecked();
+	void Action_SelectActorEightChecked();
+	void Action_SelectActorNineChecked();
+
 	void ActionSelectGeneralChecked(int32 InIndex);
+	void ActionSelectActorGeneralChecked(int32 InIndex);
+	void ActionSelectInventoryGeneralChecked(int32 InIndex);
 	// ~Actions End
 
 	UPROPERTY(VisibleInstanceOnly, Category = Input)
 	bool bGameInputAllowed = true;
+
+	// ~Actor selection Begin
+	void InitActorSelector();
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
+	TScriptInterface<IActorSelector> ActorSelector;
+
+	void InitActorSelectorUI();
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
+	UActorSelectorUIComponent* ActorSelectorUI = nullptr;
+	// ~Actor selection End
 };

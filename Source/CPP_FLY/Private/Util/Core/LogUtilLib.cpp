@@ -15,6 +15,45 @@ ULogUtilLib::ULogUtilLib()
 {
 }
 
+template<class T>
+using FuncTypeToCString = TFunction<const TCHAR*(const T&)>;
+
+void ULogUtilLib::K2LogStringArray(const TArray<FString>& InContainer, ELogRangeFlags Flags)
+{
+	LogArray(InContainer, static_cast<FuncTypeToCString<FString>>(StringDeref), Flags);
+}
+
+void ULogUtilLib::K2LogTextArray(const TArray<FText>& InContainer, ELogRangeFlags Flags)
+{
+	LogArray(InContainer, static_cast<FuncTypeToCString<FText>>(TextStringDeref), Flags);
+}
+
+void ULogUtilLib::K2LogNameArray(const TArray<FName>& InContainer, ELogRangeFlags Flags)
+{
+	LogArray(InContainer, static_cast<FuncTypeToCString<FName>>(NameStringDeref), Flags);
+}
+
+void ULogUtilLib::K2LogStringSet(const TSet<FString>& InContainer, ELogRangeFlags Flags)
+{
+	LogSet(InContainer, static_cast<FuncTypeToCString<FString>>(StringDeref), Flags);
+}
+
+void ULogUtilLib::K2LogNameSet(const TSet<FName>& InContainer, ELogRangeFlags Flags)
+{
+	LogSet(InContainer, static_cast<FuncTypeToCString<FName>>(NameStringDeref), Flags);
+}
+
+void ULogUtilLib::K2LogStringMap(const TMap<FString, FString>& InContainer, ELogRangeFlags Flags)
+{
+	LogMap
+	(
+		InContainer,
+		static_cast<FuncTypeToCString<FString>>(StringDeref),
+		static_cast<FuncTypeToCString<FString>>(StringDeref),
+		Flags
+	);
+}
+
 FString ULogUtilLib::GetNameAndClass(const UObject* const InObject)
 {
 	checkf(InObject, TEXT("nullptr is invalid when using  %s, use Safe version instead"), __FUNCTION__);
