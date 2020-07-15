@@ -7,7 +7,7 @@
 #include "MyGameBase/Player/PCBase.h"
 #include "PC.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType)
 class APC : public APCBase
 {
 	GENERATED_BODY()

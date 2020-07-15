@@ -18,7 +18,7 @@ class IDamageable;
 
 class ITestController;
 
-UCLASS()
+UCLASS(BlueprintType)
 class APCBase : 
 	public APlayerController
 ,	public IMyController
