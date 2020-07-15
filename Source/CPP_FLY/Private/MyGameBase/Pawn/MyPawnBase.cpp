@@ -6,6 +6,7 @@
 
 #include "Engine/EngineTypes.h"
 #include "GameFramework/DamageType.h"
+#include "Components/ShapeComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/PrimitiveComponent.h"
 #include "Camera/CameraComponent.h"
@@ -16,7 +17,24 @@
 
 #include "Util/Core/LogUtilLib.h"
 
-void AMyPawnBase::InitDefaultComponents(USceneComponent* AttachTo)
+AMyPawnBase::AMyPawnBase()
+{
+	DamageableComponent = CreateDefaultSubobject<UDamageableComponent>(TEXT("Damageable"));
+	WeaponComponent = CreateOptionalDefaultSubobject<UQuickWeaponComponent>(TEXT("QuickWeaponComponent"));
+}
+
+void AMyPawnBase::SetupDefaultComponents(UPrimitiveComponent* InProxComponent, class UMeshComponent* InRootMeshComponent)
+{
+	checkf(InProxComponent, TEXT("Assigned proximity component must always be valid"));
+	checkf(nullptr == ProximityComponent, TEXT("Proximity component is already attached"));
+	checkf(InRootMeshComponent, TEXT("Root mesh component should never be nullptr"));
+
+	RootComponent = InRootMeshComponent;
+	SetupDefaultRootSceneAndComponents(InRootMeshComponent);
+	InProxComponent->SetupAttachment(InRootMeshComponent);
+}
+
+void AMyPawnBase::SetupDefaultRootSceneAndComponents(USceneComponent* const AttachTo)
 {
 	checkf(AttachTo, TEXT("Component to attach to must be set"));
 
@@ -30,10 +48,10 @@ void AMyPawnBase::InitDefaultComponents(USceneComponent* AttachTo)
 
 	RootSceneComponent->SetupAttachment(AttachTo);
 
-	InitDefaultCameraComponents(RootSceneComponent);
+	SetupDefaultCameraComponents(RootSceneComponent);
 }
 
-void AMyPawnBase::InitDefaultCameraComponents(USceneComponent* AttachTo)
+void AMyPawnBase::SetupDefaultCameraComponents(USceneComponent* const AttachTo)
 {
 	checkf(AttachTo, TEXT("Component to attach to must be set"));
 
@@ -41,36 +59,13 @@ void AMyPawnBase::InitDefaultCameraComponents(USceneComponent* AttachTo)
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
 	SpringArm->bUsePawnControlRotation = false;
 	SpringArm->bInheritPitch = SpringArm->bInheritYaw = SpringArm->bInheritRoll = true;
-	SpringArm->SetRelativeLocation(FVector{-400.F, 0, 500.F});
+	SpringArm->SetRelativeLocation(FVector{ -400.F, 0, 500.F });
 	SpringArm->TargetArmLength = 400.F;
 	SpringArm->SetupAttachment(AttachTo);
-	
+
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	// ~ Camera initialization End
-}
-
-AMyPawnBase::AMyPawnBase()
-{
-	// WARNING! Never setup default scene components here!
-	// They're to be set up when Initializing default components by explicit call to SetupRootProximityComponent()
-	// inside the concrete subclass of pawn
-	DamageableComponent = CreateDefaultSubobject<UDamageableComponent>(TEXT("Damageable"));
-	WeaponComponent = CreateDefaultSubobject<UQuickWeaponComponent>(TEXT("QuickWeaponComponent"));
-}
-
-TScriptInterface<IDamageable> AMyPawnBase::GetDamageable_Implementation() const
-{
-	return DamageableComponent;
-}
-
-void AMyPawnBase::SetupDefaultComponents_RootProximityAndOthers(UPrimitiveComponent* InProxComponent)
-{
-	checkf(InProxComponent, TEXT("Assigned proximity component must always be valid"));
-	checkf(nullptr == ProximityComponent, TEXT("Root proximity component is already attached"));
-	RootComponent = InProxComponent;
-
-	InitDefaultComponents(InProxComponent);
 }
 
 void AMyPawnBase::BeginPlay()
@@ -107,10 +102,40 @@ void AMyPawnBase::PreRegisterAllComponents()
 {
 	Super::PreRegisterAllComponents();
 
+	FindComponents();
+}
+
+void AMyPawnBase::FindComponents()
+{
+	FindDamageableComponent();
+	FindWeaponComponent();
+	FindProximityComponent();
+}
+
+void AMyPawnBase::FindDamageableComponent()
+{
 	DamageableComponent = FindComponentByClass<UDamageableComponent>();
-	if(DamageableComponent == nullptr)
+	if (DamageableComponent == nullptr)
 	{
 		UE_LOG(MyLog, Warning, TEXT("No damageable component found for pawn \"%s\""), *GetName());
+	}
+}
+
+void AMyPawnBase::FindWeaponComponent()
+{
+	WeaponComponent = FindComponentByClass<UWeaponComponent>();
+	if (WeaponComponent == nullptr)
+	{
+		UE_LOG(MyLog, Warning, TEXT("No weapon component found for pawn \"%s\""), *GetName());
+	}
+}
+
+void AMyPawnBase::FindProximityComponent()
+{
+	ProximityComponent = FindComponentByClass<UShapeComponent>();
+	if (ProximityComponent == nullptr)
+	{
+		UE_LOG(MyLog, Warning, TEXT("No proximity component found for pawn \"%s\""), *GetName());
 	}
 }
 
@@ -132,11 +157,6 @@ void AMyPawnBase::PostInitializeComponents()
 	}
 }
 
-TScriptInterface<IMyController> AMyPawnBase::GetPC() const
-{
-	return TScriptInterface<IMyController>(Controller);
-}
-
 void AMyPawnBase::PostInitialize_DamageableComponent(UDamageableComponent* InComponent)
 {
 	if(GetWorld()->IsGameWorld())
@@ -152,7 +172,7 @@ void AMyPawnBase::PostInitialize_DamageableComponent(UDamageableComponent* InCom
 	}
 }
 
-void AMyPawnBase::PostInitialize_ProximityComponent(UPrimitiveComponent* InComponent)
+void AMyPawnBase::PostInitialize_ProximityComponent(UShapeComponent* InComponent)
 {
 	InComponent->OnComponentBeginOverlap.AddDynamic(this, &AMyPawnBase::OnProximityComponent_BeginOverlap);
 	InComponent->OnComponentEndOverlap.AddDynamic(this, &AMyPawnBase::OnProximityComponent_EndOverlap);
@@ -205,4 +225,15 @@ UQuickWeaponComponent* AMyPawnBase::GetQuickWeaponComponent() const
 UQuickWeaponComponent* AMyPawnBase::GetQuickWeaponComponentChecked() const
 {
 	return CastChecked<UQuickWeaponComponent>(WeaponComponent);
+}
+
+
+TScriptInterface<IDamageable> AMyPawnBase::GetDamageable_Implementation() const
+{
+	return DamageableComponent;
+}
+
+TScriptInterface<IMyController> AMyPawnBase::GetPC() const
+{
+	return TScriptInterface<IMyController>(Controller);
 }

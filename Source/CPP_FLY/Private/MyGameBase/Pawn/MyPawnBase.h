@@ -21,6 +21,10 @@ class UDamageableComponent;
 
 struct FDamageableStateChangedParams;
 
+/**
+* TODO OnComponentBeginOverlap/EndOverlap: Should be virtual?
+*/
+
 UCLASS(Blueprintable)
 class AMyPawnBase : 
 	public APawn
@@ -77,36 +81,30 @@ protected:
 	// ~Scene components Begin
 	/**
 	* The root scene component that all other scene components to be attached to.
-	* Warning! It's attached to the ProximityComponent, NOT vice versa!
+	* Warning! It's attached to the Root mesh component, NOT vice versa!
 	*/
 	UFUNCTION(BlueprintPure, Category = Components)
 	USceneComponent* GetRootSceneComponent() const { return RootSceneComponent; }
 
 	/**
 	* Primitive component to be used for proximity collisions (e.g. pickups).
-	* Warning: It's really a root
 	* @see: GetRootSceneComponent()
 	*/
 	UFUNCTION(BlueprintPure, Category = Collision)
-	UPrimitiveComponent* GetProximityComponent() const { return ProximityComponent; }
+	UShapeComponent* GetProximityComponent() const { return ProximityComponent; }
 
 	/**
-	* Setups the whole set of default component, necessary for any pawn.
-	* WARNING!!! Must always be called from CTOR in the concrete subclass of Pawn,
-	* right after the Root Proximity Component is created!
+	* Setups the whole set of default components, necessary for any pawn.	
 	*
-	* Setup the fiven primitive component so that it:
-	* 1) will be the RootComponent
-	* 2) will be used for proximity collisions (e.g. pickups)
+	* - Setups the provided mesh component as the root component;
+	* - Attaches the given proximity component to the provided root mesh component;
+	* - Setups RootSceneComponent and attaches it to the Proximity Component;	
+	* - Setups default scene components attached to RootSceneComponent (camera etc.);	
 	*
-	* Setups RootSceneComponent and attaches it to the Root Proximity Component.
-	*
-	* Setups default scene components attached to RootSceneComponent (camera etc.).
-	*
-	* Call only when you use dynamic components or C++, should NOT be called for static blueprint components.
-	*/
-	UFUNCTION(BlueprintCallable, Category = Collision)
-	void SetupDefaultComponents_RootProximityAndOthers(UPrimitiveComponent* InProxComponent);
+	* @warning To be called from C++ constructor only, never from blueprint!!!
+	* @param InRootMeshComponent    Mesh component to be used as the root (will be assigned to root automatically)
+	*/	
+	void SetupDefaultComponents(UPrimitiveComponent* InProxComponent, class UMeshComponent* InRootMeshComponent);
 	// ~Scene components End
 
 	// ~Camera Begin
@@ -115,6 +113,11 @@ protected:
 	// ~Camera End
 
 private:
+	void FindComponents();
+	void FindDamageableComponent();
+	void FindWeaponComponent();
+	void FindProximityComponent();
+
 	// ~Damageable Component Begin
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Meta = (AllowPrivateAccess = true), Category = Damage)
 	UDamageableComponent* DamageableComponent = nullptr;
@@ -122,7 +125,7 @@ private:
 	/**
 	* Helper: Performs post-actions that should be done after the damageable component is set.
 	* Setups event handlers.
-	* Does NOT sets the damageable component variable itself.
+	* Does NOT set the damageable component variable itself.
 	*/
 	UFUNCTION(BlueprintCallable, Category = Damage)
 	void PostInitialize_DamageableComponent(UDamageableComponent* InComponent);
@@ -137,14 +140,14 @@ private:
 	// ~ Weapon Component End
 
 	// ~Scene components Begin
-	void InitDefaultComponents(USceneComponent* AttachTo);
-	void InitDefaultCameraComponents(USceneComponent* AttachTo);
+	void SetupDefaultRootSceneAndComponents(USceneComponent* AttachTo);
+	void SetupDefaultCameraComponents(USceneComponent* AttachTo);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Meta = (AllowPrivateAccess = true), Category = Components)
 	USceneComponent* RootSceneComponent = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Meta = (AllowPrivateAccess = true), Category = Collision)
-	UPrimitiveComponent* ProximityComponent = nullptr;
+	UShapeComponent* ProximityComponent = nullptr;
 
 	/**
 	* Helper: Performs post-actions that should be done after the proximity component is set.
@@ -152,7 +155,7 @@ private:
 	* Does NOT set the proximity component variable itself.
 	*/
 	UFUNCTION(BlueprintCallable, Category = Collision)
-	void PostInitialize_ProximityComponent(UPrimitiveComponent* InComponent);
+	void PostInitialize_ProximityComponent(UShapeComponent* InComponent);
 
 	UFUNCTION(BlueprintCallable, Category = Collision)
 	void OnProximityComponent_BeginOverlap

@@ -10,14 +10,12 @@ AMyPlayerPawn::AMyPlayerPawn()
 	ProxCapsule->InitCapsuleSize(100.0F, 700.0F);
 	ProxCapsule->SetRelativeRotation(FRotator{/*Pitch=*/00.F, /*Yaw=*/0, /*Roll=*/0});
 	// ~ Capsule initialization (Root proximity component) End
-	SetupDefaultComponents_RootProximityAndOthers(ProxCapsule);
 	
 	// ~ Mesh initialization Begin
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	Mesh->SetupAttachment(GetRootSceneComponent());
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));	
 	// ~ Mesh initialization End
 	
-	// @TODO: Setup components here
+	SetupDefaultComponents(ProxCapsule, Mesh);
 }
 
 void AMyPlayerPawn::PostInitializeComponents()
